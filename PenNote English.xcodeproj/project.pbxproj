@@ -1,0 +1,563 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 77;
+	objects = {
+
+/* Begin PBXContainerItemProxy section */
+		D20AF7E42D7EBCBE00B4F977 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = D20AF7C62D7EBCBC00B4F977 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = D20AF7CD2D7EBCBC00B4F977;
+			remoteInfo = "PenNote English";
+		};
+		D20AF7EE2D7EBCBE00B4F977 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = D20AF7C62D7EBCBC00B4F977 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = D20AF7CD2D7EBCBC00B4F977;
+			remoteInfo = "PenNote English";
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXFileReference section */
+		D20AF7CE2D7EBCBC00B4F977 /* PenNote English.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "PenNote English.app"; sourceTree = BUILT_PRODUCTS_DIR; };
+		D20AF7E32D7EBCBE00B4F977 /* PenNote EnglishTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "PenNote EnglishTests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
+		D20AF7ED2D7EBCBE00B4F977 /* PenNote EnglishUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "PenNote EnglishUITests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
+/* End PBXFileReference section */
+
+/* Begin PBXFileSystemSynchronizedRootGroup section */
+		D20AF7D02D7EBCBC00B4F977 /* PenNote English */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = "PenNote English";
+			sourceTree = "<group>";
+		};
+		D20AF7E62D7EBCBE00B4F977 /* PenNote EnglishTests */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = "PenNote EnglishTests";
+			sourceTree = "<group>";
+		};
+		D20AF7F02D7EBCBE00B4F977 /* PenNote EnglishUITests */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = "PenNote EnglishUITests";
+			sourceTree = "<group>";
+		};
+/* End PBXFileSystemSynchronizedRootGroup section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		D20AF7CB2D7EBCBC00B4F977 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		D20AF7E02D7EBCBE00B4F977 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		D20AF7EA2D7EBCBE00B4F977 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		D20AF7C52D7EBCBC00B4F977 = {
+			isa = PBXGroup;
+			children = (
+				D20AF7D02D7EBCBC00B4F977 /* PenNote English */,
+				D20AF7E62D7EBCBE00B4F977 /* PenNote EnglishTests */,
+				D20AF7F02D7EBCBE00B4F977 /* PenNote EnglishUITests */,
+				D20AF7CF2D7EBCBC00B4F977 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		D20AF7CF2D7EBCBC00B4F977 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				D20AF7CE2D7EBCBC00B4F977 /* PenNote English.app */,
+				D20AF7E32D7EBCBE00B4F977 /* PenNote EnglishTests.xctest */,
+				D20AF7ED2D7EBCBE00B4F977 /* PenNote EnglishUITests.xctest */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		D20AF7CD2D7EBCBC00B4F977 /* PenNote English */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = D20AF7F72D7EBCBE00B4F977 /* Build configuration list for PBXNativeTarget "PenNote English" */;
+			buildPhases = (
+				D20AF7CA2D7EBCBC00B4F977 /* Sources */,
+				D20AF7CB2D7EBCBC00B4F977 /* Frameworks */,
+				D20AF7CC2D7EBCBC00B4F977 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			fileSystemSynchronizedGroups = (
+				D20AF7D02D7EBCBC00B4F977 /* PenNote English */,
+			);
+			name = "PenNote English";
+			packageProductDependencies = (
+			);
+			productName = "PenNote English";
+			productReference = D20AF7CE2D7EBCBC00B4F977 /* PenNote English.app */;
+			productType = "com.apple.product-type.application";
+		};
+		D20AF7E22D7EBCBE00B4F977 /* PenNote EnglishTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = D20AF7FA2D7EBCBE00B4F977 /* Build configuration list for PBXNativeTarget "PenNote EnglishTests" */;
+			buildPhases = (
+				D20AF7DF2D7EBCBE00B4F977 /* Sources */,
+				D20AF7E02D7EBCBE00B4F977 /* Frameworks */,
+				D20AF7E12D7EBCBE00B4F977 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				D20AF7E52D7EBCBE00B4F977 /* PBXTargetDependency */,
+			);
+			fileSystemSynchronizedGroups = (
+				D20AF7E62D7EBCBE00B4F977 /* PenNote EnglishTests */,
+			);
+			name = "PenNote EnglishTests";
+			packageProductDependencies = (
+			);
+			productName = "PenNote EnglishTests";
+			productReference = D20AF7E32D7EBCBE00B4F977 /* PenNote EnglishTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
+		D20AF7EC2D7EBCBE00B4F977 /* PenNote EnglishUITests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = D20AF7FD2D7EBCBE00B4F977 /* Build configuration list for PBXNativeTarget "PenNote EnglishUITests" */;
+			buildPhases = (
+				D20AF7E92D7EBCBE00B4F977 /* Sources */,
+				D20AF7EA2D7EBCBE00B4F977 /* Frameworks */,
+				D20AF7EB2D7EBCBE00B4F977 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				D20AF7EF2D7EBCBE00B4F977 /* PBXTargetDependency */,
+			);
+			fileSystemSynchronizedGroups = (
+				D20AF7F02D7EBCBE00B4F977 /* PenNote EnglishUITests */,
+			);
+			name = "PenNote EnglishUITests";
+			packageProductDependencies = (
+			);
+			productName = "PenNote EnglishUITests";
+			productReference = D20AF7ED2D7EBCBE00B4F977 /* PenNote EnglishUITests.xctest */;
+			productType = "com.apple.product-type.bundle.ui-testing";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		D20AF7C62D7EBCBC00B4F977 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = 1;
+				LastSwiftUpdateCheck = 1620;
+				LastUpgradeCheck = 1620;
+				TargetAttributes = {
+					D20AF7CD2D7EBCBC00B4F977 = {
+						CreatedOnToolsVersion = 16.2;
+					};
+					D20AF7E22D7EBCBE00B4F977 = {
+						CreatedOnToolsVersion = 16.2;
+						TestTargetID = D20AF7CD2D7EBCBC00B4F977;
+					};
+					D20AF7EC2D7EBCBE00B4F977 = {
+						CreatedOnToolsVersion = 16.2;
+						TestTargetID = D20AF7CD2D7EBCBC00B4F977;
+					};
+				};
+			};
+			buildConfigurationList = D20AF7C92D7EBCBC00B4F977 /* Build configuration list for PBXProject "PenNote English" */;
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = D20AF7C52D7EBCBC00B4F977;
+			minimizedProjectReferenceProxies = 1;
+			preferredProjectObjectVersion = 77;
+			productRefGroup = D20AF7CF2D7EBCBC00B4F977 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				D20AF7CD2D7EBCBC00B4F977 /* PenNote English */,
+				D20AF7E22D7EBCBE00B4F977 /* PenNote EnglishTests */,
+				D20AF7EC2D7EBCBE00B4F977 /* PenNote EnglishUITests */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		D20AF7CC2D7EBCBC00B4F977 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		D20AF7E12D7EBCBE00B4F977 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		D20AF7EB2D7EBCBE00B4F977 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		D20AF7CA2D7EBCBC00B4F977 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		D20AF7DF2D7EBCBE00B4F977 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		D20AF7E92D7EBCBE00B4F977 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		D20AF7E52D7EBCBE00B4F977 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = D20AF7CD2D7EBCBC00B4F977 /* PenNote English */;
+			targetProxy = D20AF7E42D7EBCBE00B4F977 /* PBXContainerItemProxy */;
+		};
+		D20AF7EF2D7EBCBE00B4F977 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = D20AF7CD2D7EBCBC00B4F977 /* PenNote English */;
+			targetProxy = D20AF7EE2D7EBCBE00B4F977 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin XCBuildConfiguration section */
+		D20AF7F52D7EBCBE00B4F977 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 18.2;
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = iphoneos;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG $(inherited)";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+			};
+			name = Debug;
+		};
+		D20AF7F62D7EBCBE00B4F977 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 18.2;
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				SDKROOT = iphoneos;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		D20AF7F82D7EBCBE00B4F977 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_ASSET_PATHS = "\"PenNote English/Preview Content\"";
+				DEVELOPMENT_TEAM = 9HGR5HKLNN;
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
+				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
+				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = "com.macrochen.PenNote-English";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		D20AF7F92D7EBCBE00B4F977 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_ASSET_PATHS = "\"PenNote English/Preview Content\"";
+				DEVELOPMENT_TEAM = 9HGR5HKLNN;
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
+				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
+				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = "com.macrochen.PenNote-English";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
+		D20AF7FB2D7EBCBE00B4F977 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 9HGR5HKLNN;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 18.2;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = "com.macrochen.PenNote-EnglishTests";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/PenNote English.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/PenNote English";
+			};
+			name = Debug;
+		};
+		D20AF7FC2D7EBCBE00B4F977 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 9HGR5HKLNN;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 18.2;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = "com.macrochen.PenNote-EnglishTests";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/PenNote English.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/PenNote English";
+			};
+			name = Release;
+		};
+		D20AF7FE2D7EBCBE00B4F977 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 9HGR5HKLNN;
+				GENERATE_INFOPLIST_FILE = YES;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = "com.macrochen.PenNote-EnglishUITests";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_TARGET_NAME = "PenNote English";
+			};
+			name = Debug;
+		};
+		D20AF7FF2D7EBCBE00B4F977 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 9HGR5HKLNN;
+				GENERATE_INFOPLIST_FILE = YES;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = "com.macrochen.PenNote-EnglishUITests";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_TARGET_NAME = "PenNote English";
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		D20AF7C92D7EBCBC00B4F977 /* Build configuration list for PBXProject "PenNote English" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				D20AF7F52D7EBCBE00B4F977 /* Debug */,
+				D20AF7F62D7EBCBE00B4F977 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		D20AF7F72D7EBCBE00B4F977 /* Build configuration list for PBXNativeTarget "PenNote English" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				D20AF7F82D7EBCBE00B4F977 /* Debug */,
+				D20AF7F92D7EBCBE00B4F977 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		D20AF7FA2D7EBCBE00B4F977 /* Build configuration list for PBXNativeTarget "PenNote EnglishTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				D20AF7FB2D7EBCBE00B4F977 /* Debug */,
+				D20AF7FC2D7EBCBE00B4F977 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		D20AF7FD2D7EBCBE00B4F977 /* Build configuration list for PBXNativeTarget "PenNote EnglishUITests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				D20AF7FE2D7EBCBE00B4F977 /* Debug */,
+				D20AF7FF2D7EBCBE00B4F977 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = D20AF7C62D7EBCBC00B4F977 /* Project object */;
+}
