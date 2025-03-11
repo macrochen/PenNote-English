@@ -5,8 +5,15 @@ struct WordListView: View {
     @Environment(\.managedObjectContext) private var viewContext
     @FetchRequest(
         sortDescriptors: [NSSortDescriptor(keyPath: \Word.createdAt, ascending: false)],
+        predicate: NSPredicate(format: "status == %d", 0),
         animation: .default)
     private var words: FetchedResults<Word>
+    
+    @FetchRequest(
+        sortDescriptors: [NSSortDescriptor(keyPath: \Word.createdAt, ascending: false)],
+        predicate: NSPredicate(format: "status == %d", 1),
+        animation: .default)
+    private var reviewWords: FetchedResults<Word>
     
     var body: some View {
         List {
@@ -22,9 +29,11 @@ struct WordListView: View {
             }
             
             // 待复习单词
-            Section(header: Text("今日待复习")) {
-                ForEach(words.filter { $0.status == 1 }) { word in
-                    WordRow(word: word, showReviewButton: true)
+            if !reviewWords.isEmpty {
+                Section(header: Text("今日待复习")) {
+                    ForEach(reviewWords) { word in
+                        WordRow(word: word, showReviewButton: true)
+                    }
                 }
             }
             
@@ -107,48 +116,53 @@ struct StatCard: View {
 struct WordRow: View {
     let word: Word
     let showReviewButton: Bool
+    @State private var navigateToDetail = false
     
     var body: some View {
-        HStack {
-            VStack(alignment: .leading) {
-                HStack {
-                    Text(word.english ?? "")
-                        .font(.headline)
-                    if let phonetic = word.phonetic {
-                        Text(phonetic)
-                            .font(.subheadline)
-                            .foregroundColor(.gray)
+        NavigationLink(destination: WordDetailView(word: word)) {
+            HStack {
+                VStack(alignment: .leading) {
+                    HStack {
+                        Text(word.english ?? "")
+                            .font(.headline)
+                        if let phonetic = word.phonetic {
+                            Text(phonetic)
+                                .font(.subheadline)
+                                .foregroundColor(.gray)
+                        }
                     }
-                }
-                Text(word.chinese ?? "")
-                    .font(.subheadline)
-                    .foregroundColor(.secondary)
-            }
-            
-            Spacer()
-            
-            HStack(spacing: 10) {
-                Button(action: {
-                    // 播放发音
-                }) {
-                    Image(systemName: "speaker.wave.2")
-                        .foregroundColor(.blue)
+                    Text(word.chinese ?? "")
+                        .font(.subheadline)
+                        .foregroundColor(.secondary)
                 }
                 
-                if showReviewButton {
+                Spacer()
+                
+                HStack(spacing: 10) {
                     Button(action: {
-                        // 开始复习
+                        if let english = word.english {
+                            SpeechService.shared.speak(english)
+                        }
                     }) {
-                        Text("复习")
+                        Image(systemName: "speaker.wave.2")
                             .foregroundColor(.blue)
-                            .padding(.horizontal, 12)
-                            .padding(.vertical, 6)
-                            .background(Color.blue.opacity(0.1))
-                            .cornerRadius(6)
+                    }
+                    .buttonStyle(PlainButtonStyle())
+                    
+                    if showReviewButton {
+                        NavigationLink(destination: WordReviewView(word: word)) {
+                            Text("复习")
+                                .foregroundColor(.blue)
+                                .padding(.horizontal, 12)
+                                .padding(.vertical, 6)
+                                .background(Color.blue.opacity(0.1))
+                                .cornerRadius(6)
+                        }
+                        .buttonStyle(PlainButtonStyle())
                     }
                 }
             }
+            .padding(.vertical, 4)
         }
-        .padding(.vertical, 4)
     }
 }
