@@ -62,7 +62,7 @@ struct SingleWordPracticeView: View {
             userAnswers = Array(repeating: "", count: words.count)
         }
         .navigationDestination(isPresented: $showingCheck) {
-            PracticeCheckView(words: words, userAnswers: userAnswers)
+            PracticeCheckView(words: words, userAnswers: userAnswers, isBatchMode: false)
         }
     }
     
