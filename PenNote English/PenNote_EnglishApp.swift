@@ -6,10 +6,8 @@ struct PenNote_EnglishApp: App {
     
     var body: some Scene {
         WindowGroup {
-            NavigationView {
-                WordListView()
-            }
-            .environment(\.managedObjectContext, persistenceController.container.viewContext)
+            MainTabView()
+                .environment(\.managedObjectContext, persistenceController.container.viewContext)
         }
     }
 }
