@@ -6,6 +6,12 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		D20AF8032D7EBCDA00B4F977 /* 动态间隔算法（FSRS）.md in Resources */ = {isa = PBXBuildFile; fileRef = D20AF8002D7EBCDA00B4F977 /* 动态间隔算法（FSRS）.md */; };
+		D20AF8042D7EBCDA00B4F977 /* 使用说明.md in Resources */ = {isa = PBXBuildFile; fileRef = D20AF8022D7EBCDA00B4F977 /* 使用说明.md */; };
+		D20AF8052D7EBCDA00B4F977 /* 设计方案.md in Resources */ = {isa = PBXBuildFile; fileRef = D20AF8012D7EBCDA00B4F977 /* 设计方案.md */; };
+/* End PBXBuildFile section */
+
 /* Begin PBXContainerItemProxy section */
 		D20AF7E42D7EBCBE00B4F977 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -27,11 +33,29 @@
 		D20AF7CE2D7EBCBC00B4F977 /* PenNote English.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "PenNote English.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		D20AF7E32D7EBCBE00B4F977 /* PenNote EnglishTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "PenNote EnglishTests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
 		D20AF7ED2D7EBCBE00B4F977 /* PenNote EnglishUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "PenNote EnglishUITests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
+		D20AF8002D7EBCDA00B4F977 /* 动态间隔算法（FSRS）.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = "动态间隔算法（FSRS）.md"; sourceTree = "<group>"; };
+		D20AF8012D7EBCDA00B4F977 /* 设计方案.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = "设计方案.md"; sourceTree = "<group>"; };
+		D20AF8022D7EBCDA00B4F977 /* 使用说明.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = "使用说明.md"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
+
+/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		D20AF83A2D7F0B5300B4F977 /* Exceptions for "PenNote English" folder in "PenNote English" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Info.plist,
+				"Preview Content/sample.md",
+				Resources/sample.md,
+			);
+			target = D20AF7CD2D7EBCBC00B4F977 /* PenNote English */;
+		};
+/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		D20AF7D02D7EBCBC00B4F977 /* PenNote English */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				D20AF83A2D7F0B5300B4F977 /* Exceptions for "PenNote English" folder in "PenNote English" target */,
+			);
 			path = "PenNote English";
 			sourceTree = "<group>";
 		};
@@ -79,6 +103,9 @@
 				D20AF7E62D7EBCBE00B4F977 /* PenNote EnglishTests */,
 				D20AF7F02D7EBCBE00B4F977 /* PenNote EnglishUITests */,
 				D20AF7CF2D7EBCBC00B4F977 /* Products */,
+				D20AF8002D7EBCDA00B4F977 /* 动态间隔算法（FSRS）.md */,
+				D20AF8012D7EBCDA00B4F977 /* 设计方案.md */,
+				D20AF8022D7EBCDA00B4F977 /* 使用说明.md */,
 			);
 			sourceTree = "<group>";
 		};
@@ -212,6 +239,9 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				D20AF8032D7EBCDA00B4F977 /* 动态间隔算法（FSRS）.md in Resources */,
+				D20AF8042D7EBCDA00B4F977 /* 使用说明.md in Resources */,
+				D20AF8052D7EBCDA00B4F977 /* 设计方案.md in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -399,11 +429,13 @@
 				DEVELOPMENT_TEAM = 9HGR5HKLNN;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = "PenNote English/Info.plist";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				IPHONEOS_DEPLOYMENT_TARGET = 16;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -428,11 +460,13 @@
 				DEVELOPMENT_TEAM = 9HGR5HKLNN;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = "PenNote English/Info.plist";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				IPHONEOS_DEPLOYMENT_TARGET = 16;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -454,7 +488,7 @@
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = 9HGR5HKLNN;
 				GENERATE_INFOPLIST_FILE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 18.2;
+				IPHONEOS_DEPLOYMENT_TARGET = 16;
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = "com.macrochen.PenNote-EnglishTests";
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -473,7 +507,7 @@
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = 9HGR5HKLNN;
 				GENERATE_INFOPLIST_FILE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 18.2;
+				IPHONEOS_DEPLOYMENT_TARGET = 16;
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = "com.macrochen.PenNote-EnglishTests";
 				PRODUCT_NAME = "$(TARGET_NAME)";
