@@ -29,6 +29,8 @@ extension Word {
     @NSManaged public var structure: String?
     @NSManaged public var updatedAt: Date?
     @NSManaged public var phonetic: String?
+    @NSManaged public var reviewCount: Int32
+    @NSManaged public var correctCount: Int32
     @NSManaged public var reviewRecords: NSSet?
 
 }

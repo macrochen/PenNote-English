@@ -37,5 +37,11 @@
             </dict>
         </dict>
     </array>
+    
+    <!-- 添加以下配置 -->
+    <key>LSSupportsOpeningDocumentsInPlace</key>
+    <true/>
+    <key>UISupportsDocumentBrowser</key>
+    <true/>
 </dict>
 </plist>

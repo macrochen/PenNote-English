@@ -2,6 +2,7 @@ import SwiftUI
 
 struct WordDetailView: View {
     let word: Word
+    @State private var showEditSheet = false
     
     var body: some View {
         List {
@@ -63,7 +64,54 @@ struct WordDetailView: View {
                     Text(tips)
                 }
             }
+            
+            // 学习记录部分
+            Section("学习记录") {
+                VStack(alignment: .leading, spacing: 12) {
+                    HStack {
+                        Text("添加时间")
+                        Spacer()
+                        Text(word.createdAt?.formatted(date: .numeric, time: .omitted) ?? "")
+                            .foregroundColor(.secondary)
+                    }
+                    
+                    HStack {
+                        Text("复习次数")
+                        Spacer()
+                        Text("\(word.reviewRecords?.count ?? 0)次")
+                            .foregroundColor(.secondary)
+                    }
+                    
+                    HStack {
+                        Text("正确率")
+                        Spacer()
+                        Text(String(format: "%.0f%%", word.reviewProgress * 100))
+                            .foregroundColor(.secondary)
+                    }
+                    
+                    HStack {
+                        Text("下次复习")
+                        Spacer()
+                        Text(word.needsReview ? "今天" : "待定")
+                            .foregroundColor(.secondary)
+                    }
+                }
+            }
+            
+            // 移除立即复习按钮部分
         }
         .navigationBarTitleDisplayMode(.inline)
+        .toolbar {
+            ToolbarItem(placement: .navigationBarTrailing) {
+                Button(action: { showEditSheet = true }) {
+                    Image(systemName: "square.and.pencil")
+                }
+            }
+        }
+        .sheet(isPresented: $showEditSheet) {
+            NavigationView {
+                WordEditView(word: word)
+            }
+        }
     }
 }

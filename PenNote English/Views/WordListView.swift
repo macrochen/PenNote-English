@@ -3,26 +3,50 @@ import CoreData
 
 struct WordListView: View {
     @Environment(\.managedObjectContext) private var viewContext
-    @FetchRequest(
-        sortDescriptors: [NSSortDescriptor(keyPath: \Word.createdAt, ascending: false)],
-        predicate: NSPredicate(format: "status == %d", 0),
-        animation: .default)
-    private var words: FetchedResults<Word>
+    @State private var searchText = ""
+    @State private var showingDeleteAlert = false
     
     @FetchRequest(
-        sortDescriptors: [NSSortDescriptor(keyPath: \Word.createdAt, ascending: false)],
-        predicate: NSPredicate(format: "status == %d", 1),
-        animation: .default)
-    private var reviewWords: FetchedResults<Word>
+        sortDescriptors: [
+            NSSortDescriptor(keyPath: \Word.updatedAt, ascending: false)
+        ],
+        animation: .default
+    ) private var words: FetchedResults<Word>
+    
+    // 待复习单词
+    @FetchRequest(
+        sortDescriptors: [
+            NSSortDescriptor(keyPath: \Word.updatedAt, ascending: true)
+        ],
+        predicate: NSPredicate(format: "status < 2"),  // 未掌握的单词
+        animation: .default
+    ) private var reviewWords: FetchedResults<Word>
+    
+    // 添加计算属性
+    private var filteredWords: [Word] {
+        guard !searchText.isEmpty else { return Array(words) }
+        return words.filter { word in
+            (word.english ?? "").localizedCaseInsensitiveContains(searchText) ||
+            (word.chinese ?? "").localizedCaseInsensitiveContains(searchText)
+        }
+    }
+    
+    private var accuracy: String {
+        // 计算正确率
+        let total = words.reduce(into: 0) { $0 += Int($1.reviewCount) }
+        let correct = words.reduce(into: 0) { $0 += Int($1.correctCount) }
+        guard total > 0 else { return "0%" }
+        return String(format: "%.1f%%", Double(correct) / Double(total) * 100)
+    }
     
     var body: some View {
         List {
             // 统计卡片
             Section {
                 HStack(spacing: 10) {
-                    StatCard(value: "85%", label: "正确率")
-                    StatCard(value: "12", label: "今日待复习")
-                    StatCard(value: "7", label: "连续学习")
+                    StatCard(value: accuracy, label: "正确率")
+                    StatCard(value: "\(reviewWords.count)", label: "今日待复习")
+                    StatCard(value: "7", label: "连续学习") // 这个值需要另外计算
                 }
                 .listRowInsets(EdgeInsets())
                 .padding(.horizontal)
@@ -45,12 +69,20 @@ struct WordListView: View {
                 .onDelete(perform: deleteWords)
             }
         }
-        .searchable(text: .constant(""), prompt: "搜索单词...")
-        .navigationTitle("笔记英语")
+        .searchable(text: $searchText, prompt: "搜索单词...")
         .toolbar {
             ToolbarItem(placement: .navigationBarTrailing) {
                 HStack(spacing: 16) {
-                    Button(action: clearAllWords) {
+                    if !reviewWords.isEmpty {
+                        NavigationLink {
+                            WordReviewListView(words: Array(reviewWords))
+                        } label: {
+                            Image(systemName: "book.fill")
+                                .foregroundColor(.blue)
+                        }
+                    }
+                    
+                    Button(action: { showingDeleteAlert = true }) {
                         Image(systemName: "trash")
                             .foregroundColor(.red)
                     }
@@ -63,6 +95,12 @@ struct WordListView: View {
                     }
                 }
             }
+        }
+        .alert("确认删除", isPresented: $showingDeleteAlert) {
+            Button("删除", role: .destructive, action: clearAllWords)
+            Button("取消", role: .cancel) { }
+        } message: {
+            Text("确定要删除所有单词吗？此操作不可撤销。")
         }
     }
     
@@ -112,57 +150,56 @@ struct StatCard: View {
     }
 }
 
+
 // 单词行组件
 struct WordRow: View {
     let word: Word
     let showReviewButton: Bool
-    @State private var navigateToDetail = false
     
     var body: some View {
-        NavigationLink(destination: WordDetailView(word: word)) {
-            HStack {
-                VStack(alignment: .leading) {
-                    HStack {
-                        Text(word.english ?? "")
-                            .font(.headline)
-                        if let phonetic = word.phonetic {
-                            Text(phonetic)
-                                .font(.subheadline)
-                                .foregroundColor(.gray)
-                        }
-                    }
-                    Text(word.chinese ?? "")
-                        .font(.subheadline)
-                        .foregroundColor(.secondary)
-                }
-                
-                Spacer()
-                
-                HStack(spacing: 10) {
-                    Button(action: {
-                        if let english = word.english {
-                            SpeechService.shared.speak(english)
-                        }
-                    }) {
-                        Image(systemName: "speaker.wave.2")
-                            .foregroundColor(.blue)
-                    }
-                    .buttonStyle(PlainButtonStyle())
-                    
-                    if showReviewButton {
-                        NavigationLink(destination: WordReviewView(word: word)) {
-                            Text("复习")
-                                .foregroundColor(.blue)
-                                .padding(.horizontal, 12)
-                                .padding(.vertical, 6)
-                                .background(Color.blue.opacity(0.1))
-                                .cornerRadius(6)
-                        }
-                        .buttonStyle(PlainButtonStyle())
+        HStack {
+            VStack(alignment: .leading) {
+                HStack {
+                    Text(word.english ?? "")
+                        .font(.headline)
+                    if let phonetic = word.phonetic {
+                        Text(phonetic)
+                            .font(.subheadline)
+                            .foregroundColor(.gray)
                     }
                 }
+                Text(word.chinese ?? "")
+                    .font(.subheadline)
+                    .foregroundColor(.secondary)
             }
-            .padding(.vertical, 4)
+            
+            Spacer()
+            
+            Button(action: {
+                if let english = word.english {
+                    SpeechService.shared.speak(english)
+                }
+            }) {
+                Image(systemName: "speaker.wave.2")
+                    .foregroundColor(.blue)
+            }
+            .buttonStyle(PlainButtonStyle())
+            
+            if showReviewButton {
+                Text("复习")
+                    .foregroundColor(.blue)
+                    .padding(.horizontal, 12)
+                    .padding(.vertical, 6)
+                    .background(Color.blue.opacity(0.1))
+                    .cornerRadius(6)
+            }
+            
+            NavigationLink(destination: WordDetailView(word: word)) {
+                EmptyView()
+            }
+            .opacity(0)
+            .frame(width: 0)
         }
+        .padding(.vertical, 4)
     }
 }
