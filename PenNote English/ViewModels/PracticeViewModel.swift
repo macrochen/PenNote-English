@@ -2,9 +2,21 @@ import Foundation
 import CoreData
 
 class PracticeViewModel: ObservableObject {
-    private let viewContext = PersistenceController.shared.container.viewContext
+    private let viewContext: NSManagedObjectContext
     @Published var selectedWords: [Word] = []
     @Published var currentPracticeMode: PracticeMode = .none
+    
+    @Published var availableGrades: [Int16] = []
+    @Published var availableSemesters: [Int16] = []
+    @Published var availableUnits: [Int16] = []
+    
+    @Published var currentGrade: Int16 = 1
+    @Published var currentSemester: Int16 = 1
+    @Published var currentUnit: Int16 = 1
+    
+    init(viewContext: NSManagedObjectContext) {
+        self.viewContext = viewContext
+    }
     
     enum PracticeMode {
         case none
@@ -12,26 +24,12 @@ class PracticeViewModel: ObservableObject {
         case single
     }
     
-    func fetchWords(count: Int, range: String) -> [Word] {
+    func fetchWords(count: Int) -> [Word] {
         let request = Word.fetchRequest()
-        
-        // 根据练习范围设置查询条件
-        switch range {
-        case "待复习":
-            request.predicate = NSPredicate(format: "status == %d", 1) // 假设status 1表示待复习
-        case "易错词":
-            request.predicate = NSPredicate(format: "errorCount > 0")
-        default:
-            break // 所有单词
-        }
-        
-        // 随机排序
-        request.sortDescriptors = [NSSortDescriptor(keyPath: \Word.createdAt, ascending: true)]
         request.fetchLimit = count
         
         do {
             let words = try viewContext.fetch(request)
-            // 如果获取的单词数量不足，返回所有获取到的单词
             return words.shuffled()
         } catch {
             print("获取单词失败: \(error)")
@@ -39,34 +37,23 @@ class PracticeViewModel: ObservableObject {
         }
     }
     
-    func startBatchPractice(wordCount: Int, range: String) {
-        selectedWords = fetchWords(count: wordCount, range: range)
+    func startBatchPractice(wordCount: Int) {
+        selectedWords = fetchWords(count: wordCount)
         currentPracticeMode = .batch
     }
     
-    func startSinglePractice(wordCount: Int, range: String) {
-        selectedWords = fetchWords(count: wordCount, range: range)
+    func startSinglePractice(wordCount: Int) {
+        selectedWords = fetchWords(count: wordCount)
         currentPracticeMode = .single
     }
     
     func saveWordResult(word: Word, isCorrect: Bool, errorTypes: [SpellingErrorType] = []) {
-        let record = ReviewRecord(context: viewContext)
-        record.id = UUID()
-        record.word = word
-        record.isCorrect = isCorrect
-        record.reviewDate = Date()
-        record.memoryStrength = 0.0
-        record.reviewInterval = 0.0
-        record.errorType = errorTypes.first?.rawValue ?? 0
-        
-        word.reviewCount += 1
-        if isCorrect {
-            word.correctCount += 1
-        } else {
-            word.errorCount += 1
-        }
-        
-        updateWordStatus(word: word)
+        let result = WordResult(context: viewContext)
+        result.id = UUID()
+        result.word = word
+        result.isCorrect = isCorrect
+        result.date = Date()
+        result.errorTypes = errorTypes.map { $0.description }
         
         do {
             try viewContext.save()
@@ -75,21 +62,91 @@ class PracticeViewModel: ObservableObject {
         }
     }
     
-    private func updateWordStatus(word: Word) {
-        // 根据正确率和复习次数更新单词状态
-        let correctRate = Double(word.correctCount) / Double(word.reviewCount)
-        if correctRate >= 0.8 && word.reviewCount >= 5 {
-            word.status = 2 // 已掌握
-        } else if correctRate < 0.6 {
-            word.status = 1 // 需要复习
-        }
-    }
-    
     func saveBatchResults(results: [String: Bool]) {
         for word in selectedWords {
             if let isCorrect = results[word.english ?? ""] {
                 saveWordResult(word: word, isCorrect: isCorrect)
             }
+        }
+    }
+    
+    func fetchAvailableGrades() {
+        let request = NSFetchRequest<NSDictionary>(entityName: "Word")
+        request.propertiesToFetch = ["grade"]
+        request.resultType = .dictionaryResultType
+        
+        do {
+            let results = try viewContext.fetch(request)
+            let grades = Set(results.compactMap { $0["grade"] as? Int16 }).sorted()
+            availableGrades = grades.isEmpty ? [1] : grades
+            
+            // 设置当前年级为第一个可用的年级
+            currentGrade = availableGrades.first ?? 1
+            
+            // 获取对应学期
+            fetchAvailableSemesters(for: currentGrade)
+        } catch {
+            print("获取年级失败: \(error)")
+            availableGrades = [1]
+        }
+    }
+    
+    func fetchAvailableSemesters(for grade: Int16) {
+        let request = NSFetchRequest<NSDictionary>(entityName: "Word")
+        request.propertiesToFetch = ["semester"]
+        request.resultType = .dictionaryResultType
+        request.predicate = NSPredicate(format: "grade == %d", grade)
+        
+        do {
+            let results = try viewContext.fetch(request)
+            let semesters = Set(results.compactMap { $0["semester"] as? Int16 }).sorted()
+            availableSemesters = semesters.isEmpty ? [1] : semesters
+            
+            // 设置当前学期为第一个可用的学期
+            currentSemester = availableSemesters.first ?? 1
+            
+            // 获取对应单元
+            fetchAvailableUnits(for: grade, semester: currentSemester)
+        } catch {
+            print("获取学期失败: \(error)")
+            availableSemesters = [1]
+        }
+    }
+    
+    func fetchAvailableUnits(for grade: Int16, semester: Int16) {
+        let request = NSFetchRequest<NSDictionary>(entityName: "Word")
+        request.propertiesToFetch = ["unit"]
+        request.resultType = .dictionaryResultType
+        request.predicate = NSPredicate(format: "grade == %d AND semester == %d", grade, semester)
+        
+        do {
+            let results = try viewContext.fetch(request)
+            let units = Set(results.compactMap { $0["unit"] as? Int16 }).sorted()
+            availableUnits = units.isEmpty ? [1] : units
+            
+            // 设置当前单元为第一个可用的单元
+            currentUnit = availableUnits.first ?? 1
+        } catch {
+            print("获取单元失败: \(error)")
+            availableUnits = [1]
+        }
+    }
+    
+    func fetchWordsForCurrentSelection(grade: Int16, semester: Int16, unit: Int16) {
+        let request = Word.fetchRequest()
+        request.predicate = NSPredicate(
+            format: "grade == %d AND semester == %d AND unit == %d",
+            grade, semester, unit
+        )
+        // 按照创建时间排序
+        request.sortDescriptors = [NSSortDescriptor(key: "createdAt", ascending: true)]
+        
+        do {
+            let words = try viewContext.fetch(request)
+            selectedWords = words
+        } catch {
+            print("获取单词失败: \(error)")
+            selectedWords = []
         }
     }
 }

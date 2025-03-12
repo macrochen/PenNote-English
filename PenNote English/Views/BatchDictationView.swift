@@ -54,12 +54,9 @@ struct BatchDictationView: View {
         .navigationBarTitleDisplayMode(.inline)
         .navigationBarBackButtonHidden(true)
         .toolbar {
-            ToolbarItem(placement: .navigationBarTrailing) {
-                Button(action: {
+            ToolbarItem(placement: .navigationBarLeading) {
+                Button("返回") {
                     dismiss()
-                }) {
-                    Image(systemName: "xmark.circle.fill")
-                        .foregroundColor(.blue)
                 }
             }
         }

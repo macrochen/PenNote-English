@@ -1,15 +1,25 @@
 import SwiftUI
 
 struct PracticeCheckView: View {
+    @Environment(\.managedObjectContext) private var viewContext
+    @StateObject private var viewModel: PracticeViewModel
     let words: [Word]
     let userAnswers: [String]
-    let isBatchMode: Bool  // 添加模式标识
+    let isBatchMode: Bool
+    
     @State private var results: [(isCorrect: Bool, errorTypes: Set<SpellingErrorType>)] = []
     @State private var currentIndex = 0
     @State private var userInputError = ""
-    @State private var currentAnswer = ""  // 批量模式下用于输入答案
+    @State private var currentAnswer = ""
     @Environment(\.dismiss) private var dismiss
-    @StateObject private var viewModel = PracticeViewModel()
+    
+    init(words: [Word], userAnswers: [String], isBatchMode: Bool) {
+        self.words = words
+        self.userAnswers = userAnswers
+        self.isBatchMode = isBatchMode
+        let context = PersistenceController.shared.container.viewContext
+        _viewModel = StateObject(wrappedValue: PracticeViewModel(viewContext: context))
+    }
     
     var body: some View {
         VStack(spacing: 20) {

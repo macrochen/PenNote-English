@@ -6,7 +6,7 @@ struct PenNote_EnglishApp: App {
     
     var body: some Scene {
         WindowGroup {
-            MainTabView()
+            ContentView()
                 .environment(\.managedObjectContext, persistenceController.container.viewContext)
         }
     }

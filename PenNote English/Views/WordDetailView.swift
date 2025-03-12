@@ -6,7 +6,8 @@ struct WordDetailView: View {
     
     var body: some View {
         List {
-            Section {
+            // 基本信息部分
+            Section("基本信息") {
                 VStack(alignment: .leading, spacing: 8) {
                     HStack {
                         Text(word.english ?? "")
@@ -15,6 +16,15 @@ struct WordDetailView: View {
                             Text(phonetic)
                                 .font(.headline)
                                 .foregroundColor(.gray)
+                        }
+                        if let partOfSpeech = word.partOfSpeech {
+                            Text(partOfSpeech)
+                                .font(.subheadline)
+                                .foregroundColor(.blue)
+                                .padding(.horizontal, 6)
+                                .padding(.vertical, 2)
+                                .background(Color.blue.opacity(0.1))
+                                .cornerRadius(4)
                         }
                         Spacer()
                         Button(action: {
@@ -31,74 +41,95 @@ struct WordDetailView: View {
                     Text(word.chinese ?? "")
                         .font(.headline)
                         .foregroundColor(.secondary)
+                        
+                    
+                    Text(importanceText)
+                        .foregroundColor(importanceColor)
+                        .font(.subheadline)
                 }
                 .padding(.vertical, 8)
             }
             
-            if let etymology = word.etymology {
-                Section("词根词缀") {
-                    Text(etymology)
-                }
-            }
-            
-            if let structure = word.structure {
-                Section("单词结构") {
-                    Text(structure)
-                }
-            }
-            
-            if let example = word.example {
-                Section("例句") {
-                    VStack(alignment: .leading, spacing: 8) {
+            // 学习辅助部分
+            Section("") {
+                
+                if let example = word.example {
+                    VStack(alignment: .leading) {
+                        Text("例句")
+                            .font(.headline)
                         Text(example)
                         if let translation = word.exampleTranslation {
                             Text(translation)
                                 .foregroundColor(.secondary)
                         }
                     }
+                    .padding(.vertical, 4)
+                }
+                if let etymology = word.etymology {
+                    VStack(alignment: .leading) {
+                        Text("词源")
+                            .font(.headline)
+                        Text(etymology)
+                            .foregroundColor(.secondary)
+                    }
+                    .padding(.vertical, 4)
+                }
+                
+                if let structure = word.structure {
+                    VStack(alignment: .leading) {
+                        Text("词形结构")
+                            .font(.headline)
+                        Text(structure)
+                            .foregroundColor(.secondary)
+                    }
+                    .padding(.vertical, 4)
+                }
+                
+                if let tips = word.memoryTips {
+                    VStack(alignment: .leading) {
+                        Text("记忆技巧")
+                            .font(.headline)
+                        Text(tips)
+                            .foregroundColor(.secondary)
+                    }
+                    .padding(.vertical, 4)
                 }
             }
             
-            if let tips = word.memoryTips {
-                Section("记忆技巧") {
-                    Text(tips)
-                }
-            }
-            
-            // 学习记录部分
-            Section("学习记录") {
-                VStack(alignment: .leading, spacing: 12) {
+            // 教材信息部分
+            Section("教材信息") {
+                VStack(alignment: .leading, spacing: 8) {
                     HStack {
-                        Text("添加时间")
+                        Text("年级")
                         Spacer()
-                        Text(word.createdAt?.formatted(date: .numeric, time: .omitted) ?? "")
+                        Text("\(word.grade)年级")
                             .foregroundColor(.secondary)
                     }
                     
                     HStack {
-                        Text("复习次数")
+                        Text("学期")
                         Spacer()
-                        Text("\(word.reviewRecords?.count ?? 0)次")
+                        Text("第\(word.semester)学期")
                             .foregroundColor(.secondary)
                     }
                     
                     HStack {
-                        Text("正确率")
+                        Text("单元")
                         Spacer()
-                        Text(String(format: "%.0f%%", word.reviewProgress * 100))
+                        Text("Unit \(word.unit)")
                             .foregroundColor(.secondary)
                     }
                     
-                    HStack {
-                        Text("下次复习")
-                        Spacer()
-                        Text(word.needsReview ? "今天" : "待定")
-                            .foregroundColor(.secondary)
+                    if let lesson = word.lesson {
+                        HStack {
+                            Text("课文")
+                            Spacer()
+                            Text(lesson)
+                                .foregroundColor(.secondary)
+                        }
                     }
                 }
             }
-            
-            // 移除立即复习按钮部分
         }
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
@@ -113,5 +144,34 @@ struct WordDetailView: View {
                 WordEditView(word: word)
             }
         }
+    }
+    
+    // 添加计算属性
+    private var importanceText: String {
+        switch word.importance {
+        case 0: return "普通词汇"
+        case 1: return "重点词汇"
+        case 2: return "核心词汇"
+        case 3: return "特别重要"
+        default: return "未知"
+        }
+    }
+    
+    private var importanceColor: Color {
+        switch word.importance {
+        case 0: return .secondary
+        case 1: return .blue
+        case 2: return .orange
+        case 3: return .red
+        default: return .secondary
+        }
+    }
+    
+    private var correctRate: Int {
+        guard let results = word.wordResults as? Set<WordResult>,
+              !results.isEmpty else { return 0 }
+        
+        let correctCount = results.filter { $0.isCorrect }.count
+        return Int(Double(correctCount) / Double(results.count) * 100)
     }
 }

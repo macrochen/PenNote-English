@@ -14,7 +14,7 @@ struct ContentView: View {
             }
             
             NavigationStack {
-                Text("练习")
+                PracticeModeView()  // 替换为实际的练习视图
             }
             .tag(1)
             .tabItem {
@@ -22,7 +22,7 @@ struct ContentView: View {
             }
             
             NavigationStack {
-                Text("统计")
+                StatsView()  // 替换为实际的统计视图
             }
             .tag(2)
             .tabItem {
@@ -30,7 +30,7 @@ struct ContentView: View {
             }
             
             NavigationStack {
-                Text("设置")
+                SettingsView()  // 替换为实际的设置视图
             }
             .tag(3)
             .tabItem {

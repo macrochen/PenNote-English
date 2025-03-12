@@ -1,11 +1,22 @@
 import SwiftUI
 
 struct PracticeModeView: View {
-    @StateObject private var viewModel = PracticeViewModel()
+    @Environment(\.managedObjectContext) private var viewContext
+    @StateObject private var viewModel: PracticeViewModel
+    
+    init() {
+        let context = PersistenceController.shared.container.viewContext
+        _viewModel = StateObject(wrappedValue: PracticeViewModel(viewContext: context))
+    }
+    
     @State private var wordCount: Int = 5
     @State private var practiceRange: String = "所有单词"
     @State private var showingBatchPractice = false
     @State private var showingSinglePractice = false
+    @State private var selectedGrade: Int16 = 1
+    @State private var selectedSemester: Int16 = 1
+    @State private var selectedUnit: Int16 = 1
+    @State private var showingWordSelector = false
     
     var body: some View {
         NavigationStack {  // 将 NavigationView 改为 NavigationStack
@@ -22,7 +33,7 @@ struct PracticeModeView: View {
                         .font(.subheadline)
                         .foregroundColor(.secondary)
                     Button(action: {
-                        viewModel.startBatchPractice(wordCount: wordCount, range: practiceRange)
+                        viewModel.startBatchPractice(wordCount: wordCount)
                         showingBatchPractice = true
                     }) {
                         Label("开始批量听写", systemImage: "pencil")
@@ -45,7 +56,7 @@ struct PracticeModeView: View {
                         .font(.subheadline)
                         .foregroundColor(.secondary)
                     Button(action: {
-                        viewModel.startSinglePractice(wordCount: wordCount, range: practiceRange)
+                        viewModel.startSinglePractice(wordCount: wordCount)
                         showingSinglePractice = true
                     }) {
                         Label("开始逐个拼写", systemImage: "pencil")
@@ -65,31 +76,61 @@ struct PracticeModeView: View {
                     Text("练习设置")
                         .font(.headline)
                     
+                    // 年级选择
                     HStack {
-                        Text("每次练习单词数量")
+                        Text("年级")
                         Spacer()
-                        Picker("", selection: $wordCount) {
-                            ForEach([5, 8, 10, 15], id: \.self) { count in
-                                Text("\(count)个").tag(count)
+                        Picker("", selection: $viewModel.currentGrade) {
+                            ForEach(viewModel.availableGrades, id: \.self) { grade in
+                                Text("\(grade)年级").tag(grade)
+                            }
+                        }
+                        .onChange(of: viewModel.currentGrade) { newGrade in
+                            viewModel.fetchAvailableSemesters(for: newGrade)
+                            viewModel.currentSemester = viewModel.availableSemesters.first ?? 1
+                        }
+                    }
+                    
+                    // 学期选择
+                    HStack {
+                        Text("学期")
+                        Spacer()
+                        Picker("", selection: $viewModel.currentSemester) {
+                            ForEach(viewModel.availableSemesters, id: \.self) { semester in
+                                Text("第\(semester)学期").tag(semester)
+                            }
+                        }
+                        .onChange(of: viewModel.currentSemester) { newSemester in
+                            viewModel.fetchAvailableUnits(for: viewModel.currentGrade, semester: newSemester)
+                            viewModel.currentUnit = viewModel.availableUnits.first ?? 1
+                        }
+                    }
+                    
+                    // 单元选择
+                    HStack {
+                        Text("单元")
+                        Spacer()
+                        Picker("", selection: $viewModel.currentUnit) {
+                            ForEach(viewModel.availableUnits, id: \.self) { unit in
+                                Text("Unit \(unit)").tag(unit)
                             }
                         }
                     }
                     
-                    HStack {
-                        Text("练习范围")
-                        Spacer()
-                        Picker("", selection: $practiceRange) {
-                            Text("所有单词").tag("所有单词")
-                            Text("待复习").tag("待复习")
-                            Text("易错词").tag("易错词")
+                    // 选择单词按钮
+                    Button(action: { showingWordSelector = true }) {
+                        HStack {
+                            Text("选择练习单词")
+                            Spacer()
+                            Text("\(viewModel.selectedWords.count)个")
+                                .foregroundColor(.secondary)
+                            Image(systemName: "chevron.right")
+                                .foregroundColor(.secondary)
                         }
                     }
+                    
+                    Spacer()
                 }
-                .padding()
-                .background(Color.gray.opacity(0.1))
-                .cornerRadius(10)
-                
-                Spacer()
             }
             .padding()
             .navigationBarTitleDisplayMode(.inline)
@@ -99,9 +140,20 @@ struct PracticeModeView: View {
             .navigationDestination(isPresented: $showingSinglePractice) {
                 SingleWordPracticeView(words: viewModel.selectedWords)
             }
+            .sheet(isPresented: $showingWordSelector) {
+                WordSelectorView(
+                    grade: viewModel.currentGrade,
+                    semester: viewModel.currentSemester,
+                    unit: viewModel.currentUnit,
+                    selectedWords: $viewModel.selectedWords
+                )
+            }
         }
-    }
-}
+        .onAppear {
+            viewModel.fetchAvailableGrades()
+        }
+    }  // 这里缺少了 body 的闭合
+}  // 这里缺少了 struct 的闭合
 
 #Preview {
     PracticeModeView()

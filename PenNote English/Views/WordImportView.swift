@@ -128,49 +128,59 @@ struct WordImportView: View {
                     .map { $0.trimmingCharacters(in: .whitespaces) }
                     .filter { !$0.isEmpty }
                 
-                guard columns.count >= 2 else { continue }  // 至少需要英文和中文
+                guard columns.count >= 4 else { continue }  // 至少需要英文、音标、词性和中文
                 
                 let word = Word(context: viewContext)
                 word.id = UUID()
                 let now = Date()
                 word.createdAt = now
                 word.updatedAt = now
-                word.status = 0
-                word.errorCount = 0
                 
-                // 处理英文和音标
-                let englishWithPhonetic = columns[0]
-                let components = englishWithPhonetic.components(separatedBy: "[")
-                word.english = components[0].trimmingCharacters(in: .whitespaces)
-                if components.count > 1, let phoneticText = components[1].split(separator: "]").first {
-                    word.phonetic = String(phoneticText)  // 修改：确保转换为 String
-                } else {
-                    word.phonetic = ""  // 修改：设置默认值
+                // 处理英文（第1列）
+                word.english = columns[0].trimmingCharacters(in: .whitespaces)
+                
+                // 处理音标（第2列）
+                word.phonetic = columns[1].trimmingCharacters(in: .whitespaces)
+                
+                // 处理词性（第3列）
+                word.partOfSpeech = columns[2].trimmingCharacters(in: .whitespaces)
+                
+                // 处理中文释义（第4列）
+                word.chinese = columns[3].trimmingCharacters(in: .whitespaces)
+                
+                // 处理重要性（第5列）
+                if columns.count > 4 {
+                    word.importance = columns[4] == "重点" ? 1 : 0
                 }
                 
-                // 处理其他字段
-                word.chinese = columns[1]
-                
-                // 修改：添加空值检查
-                if columns.count > 2 && !columns[2].isEmpty {
-                    word.etymology = columns[2]
+                // 处理年级（第6列）
+                if columns.count > 5, let grade = Int16(columns[5]) {
+                    word.grade = grade
                 }
                 
-                if columns.count > 3 && !columns[3].isEmpty {
-                    word.structure = columns[3]
+                // 处理学期（第7列）
+                if columns.count > 6, let semester = Int16(columns[6]) {
+                    word.semester = semester
                 }
                 
-                // 处理例句和翻译
-                if columns.count > 4 && !columns[4].isEmpty {
-                    let parts = columns[4].components(separatedBy: "（")
-                    word.example = parts[0].trimmingCharacters(in: .whitespaces)
-                    if parts.count > 1 {
-                        word.exampleTranslation = parts[1].replacingOccurrences(of: "）", with: "")
-                    }
+                // 处理单元（第8列）
+                if columns.count > 7, let unit = Int16(columns[7]) {
+                    word.unit = unit
                 }
                 
-                if columns.count > 5 && !columns[5].isEmpty {
-                    word.memoryTips = columns[5]
+                // 处理例句（第9列）
+                if columns.count > 8 {
+                    word.example = columns[8].trimmingCharacters(in: .whitespaces)
+                }
+                
+                // 处理例句翻译（第10列）
+                if columns.count > 9 {
+                    word.exampleTranslation = columns[9].trimmingCharacters(in: .whitespaces)
+                }
+                
+                // 处理词形结构分析（第11列）
+                if columns.count > 10 {
+                    word.etymology = columns[10].trimmingCharacters(in: .whitespaces)
                 }
                 
                 words.append(word)

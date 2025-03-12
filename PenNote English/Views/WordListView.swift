@@ -8,19 +8,15 @@ struct WordListView: View {
     
     @FetchRequest(
         sortDescriptors: [
-            NSSortDescriptor(keyPath: \Word.updatedAt, ascending: false)
+            NSSortDescriptor(keyPath: \Word.grade, ascending: true),
+            NSSortDescriptor(keyPath: \Word.semester, ascending: true),
+            NSSortDescriptor(keyPath: \Word.unit, ascending: true),
+            NSSortDescriptor(keyPath: \Word.createdAt, ascending: true)
         ],
         animation: .default
     ) private var words: FetchedResults<Word>
     
-    // 待复习单词
-    @FetchRequest(
-        sortDescriptors: [
-            NSSortDescriptor(keyPath: \Word.updatedAt, ascending: true)
-        ],
-        predicate: NSPredicate(format: "status < 2"),  // 未掌握的单词
-        animation: .default
-    ) private var reviewWords: FetchedResults<Word>
+    // 移除原来使用 status 的 reviewWords FetchRequest
     
     // 添加计算属性
     private var filteredWords: [Word] {
@@ -32,69 +28,86 @@ struct WordListView: View {
     }
     
     private var accuracy: String {
-        // 计算正确率
-        let total = words.reduce(into: 0) { $0 += Int($1.reviewCount) }
-        let correct = words.reduce(into: 0) { $0 += Int($1.correctCount) }
+        // 计算正确率：通过 wordResults 关系来计算
+        let results = words.flatMap { $0.wordResults?.allObjects as? [WordResult] ?? [] }
+        let total = results.count
+        let correct = results.filter { $0.isCorrect }.count
+        
         guard total > 0 else { return "0%" }
         return String(format: "%.1f%%", Double(correct) / Double(total) * 100)
     }
     
-    var body: some View {
-        List {
-            // 统计卡片
-            Section {
-                HStack(spacing: 10) {
-                    StatCard(value: accuracy, label: "正确率")
-                    StatCard(value: "\(reviewWords.count)", label: "今日待复习")
-                    StatCard(value: "7", label: "连续学习") // 这个值需要另外计算
-                }
-                .listRowInsets(EdgeInsets())
-                .padding(.horizontal)
+    // 添加分组数据的计算属性
+    private var groupedWords: [Int: [Int: [Int: [Word]]]] {
+        Dictionary(grouping: words) { Int($0.grade) }
+            .mapValues { gradeWords in
+                Dictionary(grouping: gradeWords) { Int($0.semester) }
+                    .mapValues { semesterWords in
+                        Dictionary(grouping: semesterWords) { Int($0.unit) }
+                    }
             }
-            
-            // 待复习单词
-            if !reviewWords.isEmpty {
-                Section(header: Text("今日待复习")) {
-                    ForEach(reviewWords) { word in
-                        WordRow(word: word, showReviewButton: true)
+    }
+    
+    var body: some View {
+        NavigationView {
+            List {
+                // 统计卡片部分保持不变
+                Section {
+                    HStack(spacing: 10) {
+                        StatCard(value: accuracy, label: "正确率", color: .green)
+                        StatCard(value: "\(words.count)", label: "单词总数", color: .orange)
+                        StatCard(value: "7", label: "连续学习", color: .blue)
+                    }
+                    .listRowInsets(EdgeInsets())
+                    .padding(.horizontal)
+                }
+                
+                // 按年级学期单元分组显示
+                ForEach(groupedWords.keys.sorted(), id: \.self) { grade in
+                    Section(header: Text("\(grade)年级")) {
+                        ForEach(groupedWords[grade]?.keys.sorted() ?? [], id: \.self) { semester in
+                            DisclosureGroup("\(semester)学期") {
+                                ForEach(groupedWords[grade]?[semester]?.keys.sorted() ?? [], id: \.self) { unit in
+                                    NavigationLink {
+                                        WordReviewListView(words: groupedWords[grade]?[semester]?[unit] ?? [])
+                                    } label: {
+                                        HStack {
+                                            Text("Unit \(unit)")
+                                            Spacer()
+                                            Text("\(groupedWords[grade]?[semester]?[unit]?.count ?? 0)个单词")
+                                                .foregroundColor(.secondary)
+                                        }
+                                    }
+                                }
+                            }
+                        }
                     }
                 }
             }
-            
-            // 最近添加
-            Section(header: Text("最近添加")) {
-                ForEach(words) { word in
-                    WordRow(word: word, showReviewButton: false)
-                }
-                .onDelete(perform: deleteWords)
-            }
-        }
-        .searchable(text: $searchText, prompt: "搜索单词...")
-        .toolbar {
-            ToolbarItem(placement: .navigationBarTrailing) {
-                HStack(spacing: 16) {
-                    if !reviewWords.isEmpty {
+            .searchable(text: $searchText, prompt: "搜索单词...")
+            .navigationTitle("单词列表")  // 添加导航标题
+            .navigationBarTitleDisplayMode(.inline)  // 设置标题显示模式
+            .toolbar {
+                ToolbarItem(placement: .navigationBarTrailing) {
+                    HStack(spacing: 16) {
+                        Button(action: { showingDeleteAlert = true }) {
+                            Image(systemName: "trash")
+                                .foregroundColor(.red)
+                        }
+                        
                         NavigationLink {
-                            WordReviewListView(words: Array(reviewWords))
+                            WordImportView()
                         } label: {
-                            Image(systemName: "book.fill")
+                            Image(systemName: "square.and.arrow.down")
                                 .foregroundColor(.blue)
                         }
                     }
-                    
-                    Button(action: { showingDeleteAlert = true }) {
-                        Image(systemName: "trash")
-                            .foregroundColor(.red)
-                    }
-                    
-                    NavigationLink {
-                        WordImportView()
-                    } label: {
-                        Image(systemName: "square.and.arrow.down")
-                            .foregroundColor(.blue)
-                    }
                 }
             }
+            
+            // 添加一个默认的详情视图
+            Text("选择一个单词查看详情")
+                .foregroundColor(.secondary)
         }
         .alert("确认删除", isPresented: $showingDeleteAlert) {
             Button("删除", role: .destructive, action: clearAllWords)
@@ -107,10 +120,20 @@ struct WordListView: View {
     private func clearAllWords() {
         let fetchRequest: NSFetchRequest<NSFetchRequestResult> = Word.fetchRequest()
         let batchDeleteRequest = NSBatchDeleteRequest(fetchRequest: fetchRequest)
+        batchDeleteRequest.resultType = .resultTypeObjectIDs // 设置返回被删除对象的 ID
         
         do {
-            try viewContext.execute(batchDeleteRequest)
+            let result = try viewContext.execute(batchDeleteRequest) as? NSBatchDeleteResult
+            let changes: [AnyHashable: Any] = [
+                NSDeletedObjectsKey: result?.result as? [NSManagedObjectID] ?? []
+            ]
+            
+            // 合并更改到主上下文
+            NSManagedObjectContext.mergeChanges(fromRemoteContextSave: changes, into: [viewContext])
             try viewContext.save()
+            
+            // 手动刷新 FetchRequest
+            words.nsPredicate = words.nsPredicate
         } catch {
             print("Error clearing words: \(error)")
         }
@@ -128,27 +151,6 @@ struct WordListView: View {
     }
 }
 
-// 统计卡片组件
-struct StatCard: View {
-    let value: String
-    let label: String
-    
-    var body: some View {
-        VStack {
-            Text(value)
-                .font(.system(size: 24, weight: .bold))
-                .foregroundColor(.blue)
-            Text(label)
-                .font(.caption)
-                .foregroundColor(.secondary)
-        }
-        .frame(maxWidth: .infinity)
-        .padding(.vertical)
-        .background(Color(.systemBackground))
-        .cornerRadius(10)
-        .shadow(color: Color.black.opacity(0.05), radius: 5)
-    }
-}
 
 
 // 单词行组件
@@ -185,14 +187,6 @@ struct WordRow: View {
             }
             .buttonStyle(PlainButtonStyle())
             
-            if showReviewButton {
-                Text("复习")
-                    .foregroundColor(.blue)
-                    .padding(.horizontal, 12)
-                    .padding(.vertical, 6)
-                    .background(Color.blue.opacity(0.1))
-                    .cornerRadius(6)
-            }
             
             NavigationLink(destination: WordDetailView(word: word)) {
                 EmptyView()
