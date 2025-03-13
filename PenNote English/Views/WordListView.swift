@@ -47,7 +47,17 @@ struct WordListView: View {
                     }
             }
     }
-    
+
+    private var totalPracticeDays: Int {
+        let results = words.flatMap { $0.wordResults?.allObjects as? [WordResult] ?? [] }
+        let calendar = Calendar.current
+        // 获取所有不同的练习日期
+        let uniqueDates = Set(results.compactMap { result in
+            calendar.startOfDay(for: result.date ?? Date())
+        })
+        return uniqueDates.count
+    }
+
     var body: some View {
         NavigationView {
             List {
@@ -56,7 +66,7 @@ struct WordListView: View {
                     HStack(spacing: 10) {
                         StatCard(value: accuracy, label: "正确率", color: .green)
                         StatCard(value: "\(words.count)", label: "单词总数", color: .orange)
-                        StatCard(value: "7", label: "连续学习", color: .blue)
+                        StatCard(value: "\(totalPracticeDays)", label: "练习天数", color: .blue)
                     }
                     .listRowInsets(EdgeInsets())
                     .padding(.horizontal)
@@ -148,52 +158,5 @@ struct WordListView: View {
                 print("Error deleting words: \(error)")
             }
         }
-    }
-}
-
-
-
-// 单词行组件
-struct WordRow: View {
-    let word: Word
-    let showReviewButton: Bool
-    
-    var body: some View {
-        HStack {
-            VStack(alignment: .leading) {
-                HStack {
-                    Text(word.english ?? "")
-                        .font(.headline)
-                    if let phonetic = word.phonetic {
-                        Text(phonetic)
-                            .font(.subheadline)
-                            .foregroundColor(.gray)
-                    }
-                }
-                Text(word.chinese ?? "")
-                    .font(.subheadline)
-                    .foregroundColor(.secondary)
-            }
-            
-            Spacer()
-            
-            Button(action: {
-                if let english = word.english {
-                    SpeechService.shared.speak(english)
-                }
-            }) {
-                Image(systemName: "speaker.wave.2")
-                    .foregroundColor(.blue)
-            }
-            .buttonStyle(PlainButtonStyle())
-            
-            
-            NavigationLink(destination: WordDetailView(word: word)) {
-                EmptyView()
-            }
-            .opacity(0)
-            .frame(width: 0)
-        }
-        .padding(.vertical, 4)
     }
 }

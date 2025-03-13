@@ -3,27 +3,41 @@ import CoreData
 
 class PracticeViewModel: ObservableObject {
     private let viewContext: NSManagedObjectContext
-    @Published var selectedWords: [Word] = []
-    @Published var currentPracticeMode: PracticeMode = .none
     
+    // MARK: - Published Properties
+    @Published var currentGrade: Int16 = 7
+    @Published var currentSemester: Int16 = 1
+    @Published var selectedWords: [Word] = []
     @Published var availableGrades: [Int16] = []
     @Published var availableSemesters: [Int16] = []
-    @Published var availableUnits: [Int16] = []
+    @Published var availableUnits: [UnitInfo] = []
+    @Published var currentPracticeMode: PracticeMode = .none
+    @Published var currentUnitInfo: UnitInfo = UnitInfo(unit: 1, wordCount: 0)
     
-    @Published var currentGrade: Int16 = 1
-    @Published var currentSemester: Int16 = 1
-    @Published var currentUnit: Int16 = 1
-    
-    init(viewContext: NSManagedObjectContext) {
-        self.viewContext = viewContext
+    // 修改为计算属性
+    @Published var currentUnit: Int16 = 1 {
+        didSet {
+            if let unitInfo = availableUnits.first(where: { $0.unit == currentUnit }) {
+                currentUnitInfo = unitInfo
+            }
+        }
     }
     
+    // MARK: - Initialization
+    init(viewContext: NSManagedObjectContext) {
+        self.viewContext = viewContext
+        fetchAvailableGrades()
+    }
+    
+    // MARK: - Types
     enum PracticeMode {
         case none
         case batch
         case single
     }
     
+    
+    // MARK: - Methods
     func fetchWords(count: Int) -> [Word] {
         let request = Word.fetchRequest()
         request.fetchLimit = count
@@ -113,6 +127,13 @@ class PracticeViewModel: ObservableObject {
         }
     }
     
+    struct UnitInfo: Identifiable {
+        let unit: Int16
+        let wordCount: Int
+        var id: Int16 { unit }
+    }
+    
+    
     func fetchAvailableUnits(for grade: Int16, semester: Int16) {
         let request = NSFetchRequest<NSDictionary>(entityName: "Word")
         request.propertiesToFetch = ["unit"]
@@ -122,13 +143,17 @@ class PracticeViewModel: ObservableObject {
         do {
             let results = try viewContext.fetch(request)
             let units = Set(results.compactMap { $0["unit"] as? Int16 }).sorted()
-            availableUnits = units.isEmpty ? [1] : units
+            availableUnits = units.map { unit in
+                let count = fetchUnitWordCount(grade: grade, semester: semester, unit: unit)
+                return UnitInfo(unit: unit, wordCount: count)
+            }
             
-            // 设置当前单元为第一个可用的单元
-            currentUnit = availableUnits.first ?? 1
+            // 更新当前单元信息
+            currentUnit = availableUnits.first?.unit ?? 1
+            currentUnitInfo = availableUnits.first ?? UnitInfo(unit: 1, wordCount: 0)
         } catch {
             print("获取单元失败: \(error)")
-            availableUnits = [1]
+            availableUnits = [UnitInfo(unit: 1, wordCount: 0)]
         }
     }
     
@@ -147,6 +172,21 @@ class PracticeViewModel: ObservableObject {
         } catch {
             print("获取单词失败: \(error)")
             selectedWords = []
+        }
+    }
+    
+    func fetchUnitWordCount(grade: Int16, semester: Int16, unit: Int16) -> Int {
+        let request = Word.fetchRequest()
+        request.predicate = NSPredicate(
+            format: "grade == %d AND semester == %d AND unit == %d",
+            grade, semester, unit
+        )
+        
+        do {
+            return try viewContext.count(for: request)
+        } catch {
+            print("获取单元单词数量失败: \(error)")
+            return 0
         }
     }
 }

@@ -52,3 +52,8 @@ Word ←→ WordResult：一对多关系
 - 一个单词可以有多个练习结果
 - 每个练习结果对应一个单词
 - 删除单词时级联删除相关练习结果
+
+单词列表：https://mp.weixin.qq.com/s?__biz=MzIwNjI4NzU5Mg==&mid=2247503452&idx=1&sn=c3e3b98cd39ad370a2af632df9a0305b&chksm=963bb46aa4a4ccb33bddc5ce1343c5c9b1f1cc3bc3e45f9851a7b45b5bf976739f298b8c6125#rd
+
+重点单词：
+https://mp.weixin.qq.com/s?__biz=MzkzNDY1MzE1MQ==&mid=2247496282&idx=1&sn=787f69c400af0f6cac0002f39e979ab4&chksm=c366bcb0bfd5784fa6be2876433136477d883b87df390c8581cc456be81c1ce6e41ccccb6607#rd

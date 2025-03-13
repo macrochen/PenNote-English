@@ -1,7 +1,6 @@
 import SwiftUI
 
 struct PracticeModeView: View {
-    @Environment(\.managedObjectContext) private var viewContext
     @StateObject private var viewModel: PracticeViewModel
     
     init() {
@@ -9,17 +8,13 @@ struct PracticeModeView: View {
         _viewModel = StateObject(wrappedValue: PracticeViewModel(viewContext: context))
     }
     
-    @State private var wordCount: Int = 5
-    @State private var practiceRange: String = "所有单词"
     @State private var showingBatchPractice = false
     @State private var showingSinglePractice = false
-    @State private var selectedGrade: Int16 = 1
-    @State private var selectedSemester: Int16 = 1
-    @State private var selectedUnit: Int16 = 1
     @State private var showingWordSelector = false
+    @State private var showingAlert = false
     
     var body: some View {
-        NavigationStack {  // 将 NavigationView 改为 NavigationStack
+        NavigationStack {
             VStack(spacing: 20) {
                 Text("选择练习模式")
                     .font(.title)
@@ -32,9 +27,14 @@ struct PracticeModeView: View {
                     Text("一次性显示所有单词的中文释义，在练习本上完成听写后登记结果")
                         .font(.subheadline)
                         .foregroundColor(.secondary)
+                    // 修改批量听写按钮的 action
+                    // 批量听写按钮
                     Button(action: {
-                        viewModel.startBatchPractice(wordCount: wordCount)
-                        showingBatchPractice = true
+                        if viewModel.selectedWords.isEmpty {
+                            showingAlert = true  // 显示提示
+                        } else {
+                            showingBatchPractice = true
+                        }
                     }) {
                         Label("开始批量听写", systemImage: "pencil")
                             .frame(maxWidth: .infinity)
@@ -55,9 +55,13 @@ struct PracticeModeView: View {
                     Text("在APP内逐个显示单词的中文释义，直接在输入框中拼写单词")
                         .font(.subheadline)
                         .foregroundColor(.secondary)
+                    // 修改逐个拼写按钮的 action
                     Button(action: {
-                        viewModel.startSinglePractice(wordCount: wordCount)
-                        showingSinglePractice = true
+                        if viewModel.selectedWords.isEmpty {
+                            showingAlert = true
+                        } else {
+                            showingSinglePractice = true
+                        }
                     }) {
                         Label("开始逐个拼写", systemImage: "pencil")
                             .frame(maxWidth: .infinity)
@@ -88,6 +92,7 @@ struct PracticeModeView: View {
                         .onChange(of: viewModel.currentGrade) { newGrade in
                             viewModel.fetchAvailableSemesters(for: newGrade)
                             viewModel.currentSemester = viewModel.availableSemesters.first ?? 1
+                            viewModel.selectedWords = []  // 清空选中的单词
                         }
                     }
                     
@@ -102,7 +107,8 @@ struct PracticeModeView: View {
                         }
                         .onChange(of: viewModel.currentSemester) { newSemester in
                             viewModel.fetchAvailableUnits(for: viewModel.currentGrade, semester: newSemester)
-                            viewModel.currentUnit = viewModel.availableUnits.first ?? 1
+                            viewModel.currentUnit = viewModel.availableUnits.first?.unit ?? 1
+                            viewModel.selectedWords = []  // 清空选中的单词
                         }
                     }
                     
@@ -110,10 +116,14 @@ struct PracticeModeView: View {
                     HStack {
                         Text("单元")
                         Spacer()
-                        Picker("", selection: $viewModel.currentUnit) {
-                            ForEach(viewModel.availableUnits, id: \.self) { unit in
-                                Text("Unit \(unit)").tag(unit)
+                        Picker("单元", selection: $viewModel.currentUnit) {
+                            ForEach(viewModel.availableUnits) { unitInfo in
+                                Text("Unit \(unitInfo.unit) (\(unitInfo.wordCount))")
+                                    .tag(unitInfo.unit)
                             }
+                        }
+                        .onChange(of: viewModel.currentUnit) { _ in
+                            viewModel.selectedWords = []  // 清空选中的单词
                         }
                     }
                     
@@ -136,9 +146,15 @@ struct PracticeModeView: View {
             .navigationBarTitleDisplayMode(.inline)
             .navigationDestination(isPresented: $showingBatchPractice) {
                 BatchDictationView(words: viewModel.selectedWords)
+                    .onDisappear {
+                        showingBatchPractice = false  // 只重置导航状态，不清空选中的单词
+                    }
             }
             .navigationDestination(isPresented: $showingSinglePractice) {
                 SingleWordPracticeView(words: viewModel.selectedWords)
+                    .onDisappear {
+                        showingSinglePractice = false  // 只重置导航状态，不清空选中的单词
+                    }
             }
             .sheet(isPresented: $showingWordSelector) {
                 WordSelectorView(
@@ -148,12 +164,14 @@ struct PracticeModeView: View {
                     selectedWords: $viewModel.selectedWords
                 )
             }
+            .alert("选择单词", isPresented: $showingAlert) {
+                Button("确定", role: .cancel) { }
+            } message: {
+                Text("请先选择要练习的单词，再开始听写。")
+            }
         }
-        .onAppear {
-            viewModel.fetchAvailableGrades()
-        }
-    }  // 这里缺少了 body 的闭合
-}  // 这里缺少了 struct 的闭合
+    }
+}
 
 #Preview {
     PracticeModeView()

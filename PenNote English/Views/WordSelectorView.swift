@@ -7,30 +7,98 @@ struct WordSelectorView: View {
     let semester: Int16
     let unit: Int16
     @Binding var selectedWords: [Word]
-    @StateObject private var viewModel: PracticeViewModel
-    @State private var selection = Set<Word>()
     
-    init(grade: Int16, semester: Int16, unit: Int16, selectedWords: Binding<[Word]>) {
-        self.grade = grade
-        self.semester = semester
-        self.unit = unit
-        self._selectedWords = selectedWords
-        let context = PersistenceController.shared.container.viewContext
-        _viewModel = StateObject(wrappedValue: PracticeViewModel(viewContext: context))
+    // 添加分组相关状态
+    @State private var selectedGroups: Set<Int> = []
+    
+    private var words: [Word] {
+        let request = Word.fetchRequest()
+        request.predicate = NSPredicate(
+            format: "grade == %d AND semester == %d AND unit == %d",
+            grade, semester, unit
+        )
+        request.sortDescriptors = [NSSortDescriptor(key: "createdAt", ascending: true)]
+        
+        do {
+            return try viewContext.fetch(request)
+        } catch {
+            print("获取单词失败: \(error)")
+            return []
+        }
+    }
+    
+    // 计算分组信息
+    private var groups: [(range: ClosedRange<Int>, words: [Word])] {
+        let wordArray = words
+        let total = wordArray.count
+        var result: [(range: ClosedRange<Int>, words: [Word])] = []
+        
+        let groupSize = 9 // 每组9个单词
+        var start = 0
+        
+        while start < total {
+            let end = min(start + groupSize - 1, total - 1)
+            let range = start...end
+            let groupWords = Array(wordArray[start...end])
+            result.append((range: range, words: groupWords))
+            start = end + 1
+        }
+        
+        return result
     }
     
     var body: some View {
         NavigationView {
-            List(viewModel.selectedWords, id: \.self, selection: $selection) { word in
-                VStack(alignment: .leading) {
-                    Text(word.english ?? "")
-                        .font(.headline)
-                    Text(word.chinese ?? "")
-                        .font(.subheadline)
-                        .foregroundColor(.secondary)
+            VStack {
+                // 分组选择按钮
+                ScrollView(.horizontal, showsIndicators: false) {
+                    HStack(spacing: 10) {
+                        ForEach(groups.indices, id: \.self) { index in
+                            let group = groups[index]
+                            // 修改分组选择按钮的 action
+                            Button(action: {
+                                if selectedGroups.contains(index) {
+                                    selectedGroups.remove(index)
+                                    selectedWords.removeAll { word in
+                                        group.words.contains(word)
+                                    }
+                                } else {
+                                    selectedGroups.insert(index)
+                                    // 移除可能已经存在的单词，以避免重复
+                                    selectedWords.removeAll { word in
+                                        group.words.contains(word)
+                                    }
+                                    // 按照原始顺序添加单词
+                                    selectedWords.append(contentsOf: group.words)
+                                }
+                            }) {
+                                Text("\(group.range.lowerBound + 1)-\(group.range.upperBound + 1)")
+                                    .padding(.horizontal, 12)
+                                    .padding(.vertical, 6)
+                                    .background(selectedGroups.contains(index) ? Color.blue : Color.blue.opacity(0.1))
+                                    .foregroundColor(selectedGroups.contains(index) ? .white : .blue)
+                                    .cornerRadius(15)
+                            }
+                        }
+                    }
+                    .padding()
+                }
+                
+                // 单词列表
+                List {
+                    ForEach(words) { word in
+                        // 修改单个单词选择的 action
+                        WordRow(word: word, isSelected: selectedWords.contains(word)) {
+                            if selectedWords.contains(word) {
+                                selectedWords.removeAll { $0 == word }
+                            } else {
+                                // 直接添加到末尾，保持选择顺序
+                                selectedWords.append(word)
+                            }
+                        }
+                    }
                 }
             }
-            .environment(\.editMode, .constant(.active))
             .navigationTitle("选择单词")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
@@ -41,37 +109,37 @@ struct WordSelectorView: View {
                 }
                 ToolbarItem(placement: .navigationBarTrailing) {
                     Button("完成") {
-                        selectedWords = Array(selection)
                         dismiss()
                     }
                 }
             }
         }
-        .onAppear {
-            viewModel.fetchWordsForCurrentSelection(grade: grade, semester: semester, unit: unit)
-            // 如果已经有选中的单词，恢复选中状态
-            selection = Set(selectedWords)
-        }
     }
 }
 
-struct WordSelectorRow: View {
+struct WordRow: View {
     let word: Word
     let isSelected: Bool
-    let onToggle: (Bool) -> Void
+    let action: () -> Void
     
     var body: some View {
-        Button(action: { onToggle(!isSelected) }) {
+        Button(action: action) {
             HStack {
-                Image(systemName: isSelected ? "checkmark.circle.fill" : "circle")
-                    .foregroundColor(isSelected ? .blue : .gray)
+                if isSelected {
+                    Image(systemName: "checkmark.circle.fill")
+                        .foregroundColor(.blue)
+                } else {
+                    Image(systemName: "circle")
+                        .foregroundColor(.gray)
+                }
+                
                 VStack(alignment: .leading) {
                     Text(word.english ?? "")
-                        .foregroundColor(.primary)
                     Text(word.chinese ?? "")
-                        .font(.subheadline)
+                        .font(.caption)
                         .foregroundColor(.secondary)
                 }
+                
                 Spacer()
             }
         }

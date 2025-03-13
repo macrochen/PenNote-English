@@ -16,4 +16,14 @@ enum SpellingErrorType: Int16, CaseIterable {
         case .other: return "其他错误"
         }
     }
+    
+    static func from(description: String) -> SpellingErrorType {
+        switch description {
+        case "拼写错误": return .typo
+        case "遗漏字母": return .missing
+        case "多余字母": return .extra
+        case "错误字母": return .wrong
+        default: return .other
+        }
+    }
 }

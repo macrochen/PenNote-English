@@ -42,10 +42,13 @@ struct WordDetailView: View {
                         .font(.headline)
                         .foregroundColor(.secondary)
                         
-                    
-                    Text(importanceText)
-                        .foregroundColor(importanceColor)
-                        .font(.subheadline)
+                    // 修改重点程度显示
+                    HStack {
+                        ForEach(0..<3) { index in
+                            Image(systemName: index < (word.importance) ? "star.fill" : "star")
+                                .foregroundColor(importanceColor)
+                        }
+                    }
                 }
                 .padding(.vertical, 8)
             }
@@ -97,36 +100,16 @@ struct WordDetailView: View {
             }
             
             // 教材信息部分
-            Section("教材信息") {
-                VStack(alignment: .leading, spacing: 8) {
+            Section("") {
+                Text("\(word.grade)年级第\(word.semester)学期 Unit \(word.unit)")
+                    .foregroundColor(.secondary)
+                
+                if let lesson = word.lesson {
                     HStack {
-                        Text("年级")
+                        Text("课文")
                         Spacer()
-                        Text("\(word.grade)年级")
+                        Text(lesson)
                             .foregroundColor(.secondary)
-                    }
-                    
-                    HStack {
-                        Text("学期")
-                        Spacer()
-                        Text("第\(word.semester)学期")
-                            .foregroundColor(.secondary)
-                    }
-                    
-                    HStack {
-                        Text("单元")
-                        Spacer()
-                        Text("Unit \(word.unit)")
-                            .foregroundColor(.secondary)
-                    }
-                    
-                    if let lesson = word.lesson {
-                        HStack {
-                            Text("课文")
-                            Spacer()
-                            Text(lesson)
-                                .foregroundColor(.secondary)
-                        }
                     }
                 }
             }

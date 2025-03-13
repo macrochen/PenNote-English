@@ -15,9 +15,8 @@ struct StatsView: View {
                 Section {
                     HStack(spacing: 10) {
                         StatCard(value: "\(viewModel.totalWords)", label: "总单词", color: .blue)
-                            .onAppear { print("StatCard appeared: totalWords = \(viewModel.totalWords)") }
-                        StatCard(value: "\(viewModel.totalWords - viewModel.difficultWords.count)", label: "已掌握", color: .green)
-                        StatCard(value: "\(viewModel.difficultWords.count)", label: "复习中", color: .orange)
+                        StatCard(value: "\(viewModel.practiceWords)", label: "已听写", color: .green)
+                        StatCard(value: "\(viewModel.errorWords)", label: "错误", color: .orange)
                     }
                     .listRowInsets(EdgeInsets())
                     .padding(.horizontal)
@@ -27,7 +26,7 @@ struct StatsView: View {
                     HStack(spacing: 10) {
                         StatCard(value: String(format: "%.1f%%", viewModel.totalAccuracy * 100), label: "正确率", color: .purple)
                         StatCard(value: "\(viewModel.consecutiveDays)天", label: "连续学习", color: .red)
-                        StatCard(value: "20分钟", label: "今日学习", color: .blue)
+                        StatCard(value: "\(viewModel.todayPracticeCount)", label: "今日听写", color: .blue)
                     }
                     .listRowInsets(EdgeInsets())
                     .padding(.horizontal)
@@ -48,6 +47,7 @@ struct StatsView: View {
                 }
             }
             .navigationTitle("统计")
+            .navigationBarTitleDisplayMode(.inline)  // 添加这行来避免大标题
         }
         .onAppear {
             print("StatsView appeared")
@@ -111,9 +111,6 @@ struct DifficultWordCard: View {
             
             Spacer()
             
-            Button("练习") {
-                // TODO: 实现练习功能
-            }
             .buttonStyle(.bordered)
         }
         .padding()
