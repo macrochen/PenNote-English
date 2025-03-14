@@ -6,12 +6,12 @@ struct SingleWordPracticeView: View {
     @State private var userAnswers: [String] = []
     @State private var currentInput = ""
     @State private var showingCheck = false
-    @State private var hasCompletedPractice = false  // 添加新状态
+    @State private var hasCompletedPractice = false
     @Environment(\.dismiss) private var dismiss
-    @State private var isNavigating = false  // 添加新状态来控制导航
+    @State private var isNavigating = false
     
     var body: some View {
-        NavigationStack {  // 确保使用 NavigationStack
+        NavigationStack {
             VStack(spacing: 20) {
                 // 进度指示器
                 ProgressView(value: Double(currentIndex), total: Double(words.count))
@@ -22,14 +22,34 @@ struct SingleWordPracticeView: View {
                     .foregroundColor(.secondary)
                 
                 // 当前单词的中文释义
-                VStack(alignment: .leading) {
-                    Text(words[currentIndex].chinese ?? "")
-                        .font(.title2)
-                        .padding()
-                        .frame(maxWidth: .infinity, alignment: .leading)
-                        .background(Color.gray.opacity(0.1))
-                        .cornerRadius(10)
+                VStack(alignment: .leading, spacing: 12) {
+                    HStack {
+                        Text(words[currentIndex].chinese ?? "")
+                            .font(.title2)
+                        
+                        Spacer()
+                        
+                        Button(action: speakWord) {
+                            Image(systemName: "speaker.wave.2.fill")
+                                .font(.title2)
+                                .foregroundColor(.blue)
+                        }
+                    }
+                    
+                    if let partOfSpeech = words[currentIndex].partOfSpeech {
+                        Text(partOfSpeech)
+                            .font(.subheadline)
+                            .foregroundColor(.secondary)
+                            .padding(.vertical, 4)
+                            .padding(.horizontal, 8)
+                            .background(Color.gray.opacity(0.1))
+                            .cornerRadius(6)
+                    }
                 }
+                .padding()
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .background(Color.gray.opacity(0.1))
+                .cornerRadius(10)
                 .padding(.horizontal)
                 
                 // 输入框
@@ -78,6 +98,12 @@ struct SingleWordPracticeView: View {
             currentInput = ""
         } else {
             isNavigating = true  // 使用新的状态变量
+        }
+    }
+    
+    private func speakWord() {
+        if let english = words[currentIndex].english {
+            SpeechService.shared.speak(english)
         }
     }
 }
