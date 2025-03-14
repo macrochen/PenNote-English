@@ -33,12 +33,37 @@ struct StatsView: View {
                 }
                 
                 Section("学习趋势") {
-                    WeeklyProgressCard(progress: viewModel.weeklyProgress)
+                    Section("本周正确率") {
+                        WeeklyProgressCard(progress: viewModel.weeklyProgress)
+                    }
                 }
                 
                 Section("易错词Top5") {
-                    ForEach(viewModel.difficultWords) { word in
-                        DifficultWordCard(word: word)
+                    if viewModel.difficultWords.isEmpty {
+                        Text("目前没有错误单词，继续保持！")
+                            .foregroundColor(.secondary)
+                            .frame(maxWidth: .infinity, alignment: .center)
+                            .padding()
+                    } else {
+                        ForEach(viewModel.difficultWords) { word in
+                            DifficultWordCard(word: word)
+                        }
+                    }
+                    
+                    // 只在有错误单词时显示查看更多按钮
+                    if !viewModel.allDifficultWords.isEmpty {
+                        NavigationLink {
+                            DifficultWordsListView(difficultWords: viewModel.allDifficultWords)
+                        } label: {
+                            HStack {
+                                Spacer()
+                                Text("查看全部易错单词")
+                                    .font(.subheadline)
+                                    .foregroundColor(.blue)
+                                Spacer()
+                            }
+                            .padding(.vertical, 8)
+                        }
                     }
                 }
                 
@@ -46,9 +71,9 @@ struct StatsView: View {
                     ErrorTypeAnalysisCard(errorTypes: viewModel.errorTypeStats)
                 }
             }
-            .navigationTitle("统计")
-            .navigationBarTitleDisplayMode(.inline)  // 添加这行来避免大标题
         }
+        .navigationTitle("统计")
+        .navigationBarTitleDisplayMode(.inline)  // 添加这行来避免大标题
         .onAppear {
             print("StatsView appeared")
             DispatchQueue.main.async {
@@ -68,16 +93,36 @@ struct WeeklyProgressCard: View {
     
     var body: some View {
         VStack(alignment: .leading) {
-            Text("本周学习情况")
+            Text("每日听写正确率")
                 .font(.headline)
                 .padding(.bottom, 10)
             
             HStack(alignment: .bottom, spacing: 8) {
                 ForEach(0..<7) { index in
                     VStack {
-                        RoundedRectangle(cornerRadius: 4)
-                            .fill(Color.blue)
-                            .frame(height: 150 * progress[index])
+                        if progress[index] >= 0 {
+                            Text("\(Int(progress[index] * 100))%")
+                                .font(.caption)
+                                .foregroundColor(.blue)
+                        }
+                        
+                        ZStack {
+                            if progress[index] < 0 {
+                                // 未练习时显示虚线框
+                                RoundedRectangle(cornerRadius: 4)
+                                    .stroke(style: StrokeStyle(lineWidth: 1, dash: [4]))
+                                    .foregroundColor(.gray.opacity(0.5))
+                                    .frame(height: 30)
+                                
+                                Image(systemName: "minus")
+                                    .foregroundColor(.gray.opacity(0.5))
+                            } else {
+                                RoundedRectangle(cornerRadius: 4)
+                                    .fill(Color.blue)
+                                    .frame(height: max(20, 150 * progress[index]))
+                            }
+                        }
+                        
                         Text(days[index])
                             .font(.caption2)
                             .padding(.top, 5)

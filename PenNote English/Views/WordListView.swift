@@ -59,44 +59,71 @@ struct WordListView: View {
     }
 
     var body: some View {
-        NavigationView {
-            List {
-                // 统计卡片部分保持不变
-                Section {
-                    HStack(spacing: 10) {
-                        StatCard(value: accuracy, label: "正确率", color: .green)
-                        StatCard(value: "\(words.count)", label: "单词总数", color: .orange)
-                        StatCard(value: "\(totalPracticeDays)", label: "练习天数", color: .blue)
+        NavigationStack {
+            VStack {
+                if !searchText.isEmpty {
+                    // 搜索结果列表
+                    List {
+                        ForEach(filteredWords, id: \.self) { word in
+                            NavigationLink {
+                                WordDetailView(word: word)
+                            } label: {
+                                VStack(alignment: .leading, spacing: 4) {
+                                    Text(word.english ?? "")
+                                        .font(.headline)
+                                    Text(word.chinese ?? "")
+                                        .font(.subheadline)
+                                        .foregroundColor(.secondary)
+                                    Text("Unit \(word.unit) - \(word.grade)年级第\(word.semester)学期")
+                                        .font(.caption)
+                                        .foregroundColor(.secondary)
+                                }
+                                .padding(.vertical, 4)
+                            }
+                        }
                     }
-                    .listRowInsets(EdgeInsets())
-                    .padding(.horizontal)
-                }
-                
-                // 按年级学期单元分组显示
-                ForEach(groupedWords.keys.sorted(), id: \.self) { grade in
-                    Section(header: Text("\(grade)年级")) {
-                        ForEach(groupedWords[grade]?.keys.sorted() ?? [], id: \.self) { semester in
-                            DisclosureGroup("\(semester)学期") {
-                                ForEach(groupedWords[grade]?[semester]?.keys.sorted() ?? [], id: \.self) { unit in
-                                    NavigationLink {
-                                        WordReviewListView(words: groupedWords[grade]?[semester]?[unit] ?? [])
-                                    } label: {
-                                        HStack {
-                                            Text("Unit \(unit)")
-                                            Spacer()
-                                            Text("\(groupedWords[grade]?[semester]?[unit]?.count ?? 0)个单词")
-                                                .foregroundColor(.secondary)
+                } else {
+                    // 原有的分组列表
+                    List {
+                        // 统计卡片部分保持不变
+                        Section {
+                            HStack(spacing: 10) {
+                                StatCard(value: accuracy, label: "正确率", color: .green)
+                                StatCard(value: "\(words.count)", label: "单词总数", color: .orange)
+                                StatCard(value: "\(totalPracticeDays)", label: "练习天数", color: .blue)
+                            }
+                            .listRowInsets(EdgeInsets())
+                            .padding(.horizontal)
+                        }
+                        
+                        // 按年级学期单元分组显示
+                        ForEach(groupedWords.keys.sorted(), id: \.self) { grade in
+                            Section(header: Text("\(grade)年级")) {
+                                ForEach(groupedWords[grade]?.keys.sorted() ?? [], id: \.self) { semester in
+                                    DisclosureGroup("\(semester)学期") {
+                                        ForEach(groupedWords[grade]?[semester]?.keys.sorted() ?? [], id: \.self) { unit in
+                                            NavigationLink {
+                                                WordReviewListView(words: groupedWords[grade]?[semester]?[unit] ?? [])
+                                            } label: {
+                                                HStack {
+                                                    Text("Unit \(unit)")
+                                                    Spacer()
+                                                    Text("\(groupedWords[grade]?[semester]?[unit]?.count ?? 0)个单词")
+                                                        .foregroundColor(.secondary)
+                                                }
+                                            }
                                         }
                                     }
                                 }
                             }
                         }
                     }
+                    .listStyle(InsetGroupedListStyle())
                 }
             }
             .searchable(text: $searchText, prompt: "搜索单词...")
-            .navigationTitle("单词列表")  // 添加导航标题
-            .navigationBarTitleDisplayMode(.inline)  // 设置标题显示模式
+            .navigationTitle("单词列表")
+            .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .navigationBarTrailing) {
                     HStack(spacing: 16) {
@@ -114,10 +141,6 @@ struct WordListView: View {
                     }
                 }
             }
-            
-            // 添加一个默认的详情视图
-            Text("选择一个单词查看详情")
-                .foregroundColor(.secondary)
         }
         .alert("确认删除", isPresented: $showingDeleteAlert) {
             Button("删除", role: .destructive, action: clearAllWords)

@@ -24,6 +24,8 @@ class StatsViewModel: ObservableObject {
     @Published var weeklyProgress: [Double] = Array(repeating: 0, count: 7)
     /// 最常错误的5个单词
     @Published var difficultWords: [DifficultWord] = []
+    /// 所有错误单词（按错误率排序）
+    @Published var allDifficultWords: [DifficultWord] = []
     /// 错误类型统计数据
     @Published var errorTypeStats: [ErrorTypeStat] = []
     
@@ -44,8 +46,6 @@ class StatsViewModel: ObservableObject {
     /// 加载所有统计数据
     /// 包括：总体统计、今日统计、连续天数、周进度、易错词、错误类型分析
     func loadStats() {
-        print("=== 开始加载统计数据 ===")
-        
         loadTotalWordsCount()
         loadOverallAccuracyStats()
         loadTodayPracticeCount()
@@ -54,7 +54,6 @@ class StatsViewModel: ObservableObject {
         loadWeeklyProgress()
         loadDifficultWords()
         loadErrorTypeStats()
-        print("=== 统计数据加载完成 ===")
     }
     
     /// 加载词库中的总单词数
@@ -135,13 +134,18 @@ class StatsViewModel: ObservableObject {
             return
         }
         
+        // print("开始计算周进度数据，monday: \(monday)")
         // 从周一开始，获取一周的数据
         weeklyProgress = (0..<7).map { dayOffset in
-            guard let date = calendar.date(byAdding: .day, value: dayOffset, to: monday) else { return 0 }
+            guard let date = calendar.date(byAdding: .day, value: dayOffset, to: monday) else {
+                // print("❌ 计算第\(dayOffset)天日期失败")
+                return 0
+            }
             let accuracy = calculateDailyAccuracy(for: date)
-            print("日期: \(date), 星期: \(calendar.component(.weekday, from: date)), 正确率: \(accuracy)")
+            // print("📊 第\(dayOffset)天(\(date)): 正确率 = \(accuracy)")
             return accuracy
         }
+        // print("周进度数据: \(weeklyProgress)")
     }
     
     /// 加载最常见的易错单词
@@ -161,26 +165,43 @@ class StatsViewModel: ObservableObject {
         
         do {
             let words = try context.fetch(fetchRequest)
-            difficultWords = words.compactMap { word in
-                let results = word.wordResults?.allObjects as? [WordResult] ?? []
-                let totalAttempts = results.count
-                let errorCount = results.filter { !$0.isCorrect }.count
-                
-                guard totalAttempts > 0 else { return nil }
-                let errorRate = Double(errorCount) / Double(totalAttempts)
-                
-                return errorRate > 0 ? DifficultWord(
+            // 计算所有单词的错误率
+            let allWords = words.map { word in
+                let errorRate = calculateErrorRate(for: word)
+                return DifficultWord(
                     english: word.english ?? "",
                     chinese: word.chinese ?? "",
-                    errorRate: errorRate
-                ) : nil
+                    errorRate: errorRate,
+                    word: word
+                )
             }
+            // 先过滤出错误率大于0的单词，再按错误率排序
+            .filter { $0.errorRate > 0 }
             .sorted(by: { $0.errorRate > $1.errorRate })
-            .prefix(5)
-            .map { $0 }
+            
+            // 存储所有错误率大于0的单词
+            self.allDifficultWords = allWords
+            
+            // 只取前5个作为Top5显示，如果没有错误单词则为空数组
+            self.difficultWords = allWords.prefix(5).map { $0 }
         } catch {
             print("加载易错单词失败: \(error)")
         }
+    }
+    
+    /// 计算单词的错误率
+    /// - Parameter word: 要计算错误率的单词
+    /// - Returns: 错误率（0.0-1.0）
+    private func calculateErrorRate(for word: Word) -> Double {
+        guard let results = word.wordResults?.allObjects as? [WordResult],
+              !results.isEmpty else {
+            return 0
+        }
+        
+        let totalAttempts = Double(results.count)
+        let errorCount = Double(results.filter { !$0.isCorrect }.count)
+        
+        return errorCount / totalAttempts
     }
     
     /// 加载错误类型统计数据
@@ -250,6 +271,9 @@ class StatsViewModel: ObservableObject {
         do {
             // 获取符合条件的所有单词
             let words = try context.fetch(fetchRequest)
+            if words.isEmpty {
+                return -1  // 表示这一天没有练习
+            }
             var correctCount = 0  // 最后一次听写正确的单词数
             var totalCount = 0    // 当天练习的总单词数
             

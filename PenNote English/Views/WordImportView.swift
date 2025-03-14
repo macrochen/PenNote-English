@@ -183,6 +183,10 @@ struct WordImportView: View {
                     word.etymology = columns[10].trimmingCharacters(in: .whitespaces)
                 }
                 
+                // 处理记忆技巧（第12列）
+                if columns.count > 11 {
+                    word.memoryTips = columns[11].trimmingCharacters(in: .whitespaces)
+                }
                 words.append(word)
             }
             

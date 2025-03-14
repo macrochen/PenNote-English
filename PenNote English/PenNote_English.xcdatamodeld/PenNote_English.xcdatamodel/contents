@@ -1,13 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="23605" systemVersion="24D70" minimumToolsVersion="Automatic" sourceLanguage="Swift" usedWithSwiftData="YES" userDefinedModelVersionIdentifier="">
-    <entity name="LearningStats" representedClassName="LearningStats" syncable="YES">
-        <attribute name="correctCount" attributeType="Integer 16" defaultValueString="0" usesScalarValueType="YES"/>
-        <attribute name="date" attributeType="Date" usesScalarValueType="NO"/>
-        <attribute name="id" attributeType="UUID" usesScalarValueType="NO"/>
-        <attribute name="masteredCount" attributeType="Integer 16" defaultValueString="0" usesScalarValueType="YES"/>
-        <attribute name="newWordsCount" attributeType="Integer 16" defaultValueString="0" usesScalarValueType="YES"/>
-        <attribute name="totalTime" attributeType="Double" defaultValueString="0.0" usesScalarValueType="YES"/>
-    </entity>
     <entity name="Word" representedClassName=".Word" syncable="YES">
         <attribute name="chinese" attributeType="String"/>
         <attribute name="createdAt" attributeType="Date" usesScalarValueType="NO"/>

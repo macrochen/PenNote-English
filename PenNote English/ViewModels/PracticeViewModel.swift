@@ -14,6 +14,11 @@ class PracticeViewModel: ObservableObject {
     @Published var currentPracticeMode: PracticeMode = .none
     @Published var currentUnitInfo: UnitInfo = UnitInfo(unit: 1, wordCount: 0)
     
+    // 在 PracticeViewModel 类中添加以下属性
+    @Published var importanceFilter: Int16 = -1 // -1表示全部
+    @Published var practiceStatusFilter: Int16 = 0 // 0表示全部，1表示未听写
+    @Published var errorCountFilter: Int16 = 0 // 0表示全部，1-4表示对应错误次数
+    
     // 修改为计算属性
     @Published var currentUnit: Int16 = 1 {
         didSet {

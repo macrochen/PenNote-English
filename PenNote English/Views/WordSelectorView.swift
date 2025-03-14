@@ -1,22 +1,61 @@
 import SwiftUI
+import CoreData
 
 struct WordSelectorView: View {
-    @Environment(\.dismiss) private var dismiss
-    @Environment(\.managedObjectContext) private var viewContext
     let grade: Int16
     let semester: Int16
     let unit: Int16
+    let importanceFilter: Int16  // 添加重要程度过滤
+    let practiceStatusFilter: Int16  // 添加听写状态过滤
+    let errorCountFilter: Int16  // 添加错误次数过滤
     @Binding var selectedWords: [Word]
+    
+    // 添加环境变量
+    @Environment(\.managedObjectContext) private var viewContext
+    @Environment(\.dismiss) private var dismiss
     
     // 添加分组相关状态
     @State private var selectedGroups: Set<Int> = []
     
     private var words: [Word] {
         let request = Word.fetchRequest()
-        request.predicate = NSPredicate(
-            format: "grade == %d AND semester == %d AND unit == %d",
-            grade, semester, unit
-        )
+        
+        // 构建基本查询条件
+        var predicates: [NSPredicate] = []
+        
+        // 年级、学期、单元的基本条件
+        predicates.append(NSPredicate(format: "grade == %d AND semester == %d AND unit == %d", 
+                                     grade, semester, unit))
+        
+        // 重要程度过滤
+        if importanceFilter != -1 {  // -1 表示"全部"
+            predicates.append(NSPredicate(format: "importance == %d", importanceFilter))
+        }
+        
+        // 听写状态过滤
+        if practiceStatusFilter == 1 {  // 1 表示"未听写"
+            // 查找没有关联 wordResults 的单词
+            predicates.append(NSPredicate(format: "wordResults.@count == 0"))
+        }
+        
+        // 错误次数过滤
+        if errorCountFilter > 0 {
+            switch errorCountFilter {
+            case 1:  // 1次错误
+                predicates.append(NSPredicate(format: "SUBQUERY(wordResults, $result, $result.isCorrect == NO).@count == 1"))
+            case 2:  // 2次错误
+                predicates.append(NSPredicate(format: "SUBQUERY(wordResults, $result, $result.isCorrect == NO).@count == 2"))
+            case 3:  // 3次错误
+                predicates.append(NSPredicate(format: "SUBQUERY(wordResults, $result, $result.isCorrect == NO).@count == 3"))
+            case 4:  // 3次以上错误
+                predicates.append(NSPredicate(format: "SUBQUERY(wordResults, $result, $result.isCorrect == NO).@count > 3"))
+            default:
+                break
+            }
+        }
+        
+        // 组合所有条件
+        request.predicate = NSCompoundPredicate(andPredicateWithSubpredicates: predicates)
         request.sortDescriptors = [NSSortDescriptor(key: "createdAt", ascending: true)]
         
         do {
