@@ -4,6 +4,7 @@ struct PracticeModeView: View {
     @StateObject private var viewModel: PracticeViewModel
     
     init() {
+        // 创建视图模型但不访问其 wrappedValue
         let context = PersistenceController.shared.container.viewContext
         _viewModel = StateObject(wrappedValue: PracticeViewModel(viewContext: context))
     }
@@ -98,7 +99,8 @@ struct PracticeModeView: View {
                                 }
                                 .onChange(of: viewModel.currentGrade) { newGrade in
                                     viewModel.fetchAvailableSemesters(for: newGrade)
-                                    viewModel.currentSemester = viewModel.availableSemesters.first ?? 1
+                                    // 删除这行，让 fetchAvailableSemesters 方法决定是否更新 currentSemester
+                                    // viewModel.currentSemester = viewModel.availableSemesters.first ?? 1
                                     viewModel.selectedWords = []  // 清空选中的单词
                                 }
                             }
@@ -114,7 +116,8 @@ struct PracticeModeView: View {
                                 }
                                 .onChange(of: viewModel.currentSemester) { newSemester in
                                     viewModel.fetchAvailableUnits(for: viewModel.currentGrade, semester: newSemester)
-                                    viewModel.currentUnit = viewModel.availableUnits.first?.unit ?? 1
+                                    // 删除这行，让 fetchAvailableUnits 方法决定是否更新 currentUnit
+                                    // viewModel.currentUnit = viewModel.availableUnits.first?.unit ?? 1
                                     viewModel.selectedWords = []  // 清空选中的单词
                                 }
                             }
@@ -175,6 +178,12 @@ struct PracticeModeView: View {
                                     print("听写状态已更改为: \(newValue)")
                                     viewModel.selectedWords = []
                                 }
+                            }
+                            .onAppear {
+                                // 确保在视图出现时设置为未听写状态
+                                // if viewModel.practiceStatusFilter == 0 {
+                                //     viewModel.practiceStatusFilter = 1
+                                // }
                             }
                             
                             // 错误次数过滤
@@ -244,6 +253,10 @@ struct PracticeModeView: View {
                 } message: {
                     Text("请先选择要练习的单词，再开始听写。")
                 }
+            }
+            .onAppear {
+                // 注释掉这行代码，让从 UserDefaults 加载的设置生效
+                // viewModel.practiceStatusFilter = 1
             }
         }
     }

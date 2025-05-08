@@ -5,8 +5,16 @@ class PracticeViewModel: ObservableObject {
     private let viewContext: NSManagedObjectContext
     
     // MARK: - Published Properties
-    @Published var currentGrade: Int16 = 7
-    @Published var currentSemester: Int16 = 1
+    @Published var currentGrade: Int16 = 7 {
+        didSet {
+            saveSettings()
+        }
+    }
+    @Published var currentSemester: Int16 = 1 {
+        didSet {
+            saveSettings()
+        }
+    }
     @Published var selectedWords: [Word] = []
     @Published var availableGrades: [Int16] = []
     @Published var availableSemesters: [Int16] = []
@@ -15,9 +23,21 @@ class PracticeViewModel: ObservableObject {
     @Published var currentUnitInfo: UnitInfo = UnitInfo(unit: 1, wordCount: 0)
     
     // 在 PracticeViewModel 类中添加以下属性
-    @Published var importanceFilter: Int16 = -1 // -1表示全部
-    @Published var practiceStatusFilter: Int16 = 0 // 0表示全部，1表示未听写
-    @Published var errorCountFilter: Int16 = 0 // 0表示全部，1-4表示对应错误次数
+    @Published var importanceFilter: Int16 = -1 { // -1表示全部
+        didSet {
+            saveSettings()
+        }
+    }
+    @Published var practiceStatusFilter: Int16 = 0 { // 0表示全部，1表示未听写
+        didSet {
+            saveSettings()
+        }
+    }
+    @Published var errorCountFilter: Int16 = 0 { // 0表示全部，1-4表示对应错误次数
+        didSet {
+            saveSettings()
+        }
+    }
     
     // 修改为计算属性
     @Published var currentUnit: Int16 = 1 {
@@ -25,12 +45,14 @@ class PracticeViewModel: ObservableObject {
             if let unitInfo = availableUnits.first(where: { $0.unit == currentUnit }) {
                 currentUnitInfo = unitInfo
             }
+            saveSettings()
         }
     }
     
     // MARK: - Initialization
     init(viewContext: NSManagedObjectContext) {
         self.viewContext = viewContext
+        loadSettings() // 先加载保存的设置
         fetchAvailableGrades()
     }
     
@@ -41,6 +63,47 @@ class PracticeViewModel: ObservableObject {
         case single
     }
     
+    // MARK: - UserDefaults 相关方法
+    private var isLoading = false // 添加一个标志变量
+    
+    private func saveSettings() {
+        // 如果正在加载，则不保存
+        if isLoading { return }
+        
+        let defaults = UserDefaults.standard
+        defaults.set(Int(currentGrade), forKey: "practiceCurrentGrade")
+        defaults.set(Int(currentSemester), forKey: "practiceCurrentSemester")
+        defaults.set(Int(currentUnit), forKey: "practiceCurrentUnit")
+        defaults.set(Int(importanceFilter), forKey: "practiceImportanceFilter")
+        defaults.set(Int(practiceStatusFilter), forKey: "practicePracticeStatusFilter")
+        defaults.set(Int(errorCountFilter), forKey: "practiceErrorCountFilter")
+    }
+    
+    private func loadSettings() {
+        isLoading = true // 开始加载
+        
+        let defaults = UserDefaults.standard
+        if defaults.object(forKey: "practiceCurrentGrade") != nil {
+            currentGrade = Int16(defaults.integer(forKey: "practiceCurrentGrade"))
+        }
+        if defaults.object(forKey: "practiceCurrentSemester") != nil {
+            currentSemester = Int16(defaults.integer(forKey: "practiceCurrentSemester"))
+        }
+        if defaults.object(forKey: "practiceCurrentUnit") != nil {
+            currentUnit = Int16(defaults.integer(forKey: "practiceCurrentUnit"))
+        }
+        if defaults.object(forKey: "practiceImportanceFilter") != nil {
+            importanceFilter = Int16(defaults.integer(forKey: "practiceImportanceFilter"))
+        }
+        if defaults.object(forKey: "practicePracticeStatusFilter") != nil {
+            practiceStatusFilter = Int16(defaults.integer(forKey: "practicePracticeStatusFilter"))
+        }
+        if defaults.object(forKey: "practiceErrorCountFilter") != nil {
+            errorCountFilter = Int16(defaults.integer(forKey: "practiceErrorCountFilter"))
+        }
+        
+        isLoading = false // 加载完成
+    }
     
     // MARK: - Methods
     func fetchWords(count: Int) -> [Word] {
@@ -97,10 +160,13 @@ class PracticeViewModel: ObservableObject {
         do {
             let results = try viewContext.fetch(request)
             let grades = Set(results.compactMap { $0["grade"] as? Int16 }).sorted()
+            let oldGrades = availableGrades
             availableGrades = grades.isEmpty ? [1] : grades
             
-            // 设置当前年级为第一个可用的年级
-            currentGrade = availableGrades.first ?? 1
+            // 只有在初始化时（oldGrades为空）或当前年级不在可用年级列表中时才更新当前年级
+            if oldGrades.isEmpty || !availableGrades.contains(currentGrade) {
+                currentGrade = availableGrades.first ?? 1
+            }
             
             // 获取对应学期
             fetchAvailableSemesters(for: currentGrade)
@@ -119,10 +185,13 @@ class PracticeViewModel: ObservableObject {
         do {
             let results = try viewContext.fetch(request)
             let semesters = Set(results.compactMap { $0["semester"] as? Int16 }).sorted()
+            let oldSemesters = availableSemesters
             availableSemesters = semesters.isEmpty ? [1] : semesters
             
-            // 设置当前学期为第一个可用的学期
-            currentSemester = availableSemesters.first ?? 1
+            // 只有在初始化时（oldSemesters为空）或当前学期不在可用学期列表中时才更新当前学期
+            if oldSemesters.isEmpty || !availableSemesters.contains(currentSemester) {
+                currentSemester = availableSemesters.first ?? 1
+            }
             
             // 获取对应单元
             fetchAvailableUnits(for: grade, semester: currentSemester)
@@ -153,9 +222,13 @@ class PracticeViewModel: ObservableObject {
                 return UnitInfo(unit: unit, wordCount: count)
             }
             
-            // 更新当前单元信息
-            currentUnit = availableUnits.first?.unit ?? 1
-            currentUnitInfo = availableUnits.first ?? UnitInfo(unit: 1, wordCount: 0)
+            // 只有在初始化时（availableUnits为空）或当前单元不在可用单元列表中时才更新当前单元
+            if availableUnits.isEmpty || !availableUnits.contains(where: { $0.unit == currentUnit }) {
+                currentUnit = availableUnits.first?.unit ?? 1
+                currentUnitInfo = availableUnits.first ?? UnitInfo(unit: 1, wordCount: 0)
+            } else if let unitInfo = availableUnits.first(where: { $0.unit == currentUnit }) {
+                currentUnitInfo = unitInfo
+            }
         } catch {
             print("获取单元失败: \(error)")
             availableUnits = [UnitInfo(unit: 1, wordCount: 0)]

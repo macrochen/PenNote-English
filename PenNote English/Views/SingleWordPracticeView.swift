@@ -59,14 +59,28 @@ struct SingleWordPracticeView: View {
                     .autocapitalization(.none)
                     .disableAutocorrection(true)
                 
-                // 提交按钮
-                Button(action: nextWord) {
-                    Text(currentIndex < words.count - 1 ? "下一个" : "完成")
-                        .frame(maxWidth: .infinity)
-                        .padding()
-                        .background(Color.blue)
-                        .foregroundColor(.white)
-                        .cornerRadius(10)
+                // 导航按钮
+                HStack(spacing: 15) {
+                    // 上一个按钮
+                    Button(action: previousWord) {
+                        Text("上一个")
+                            .frame(maxWidth: .infinity)
+                            .padding()
+                            .background(currentIndex > 0 ? Color.blue : Color.gray)
+                            .foregroundColor(.white)
+                            .cornerRadius(10)
+                    }
+                    .disabled(currentIndex == 0)
+                    
+                    // 下一个/完成按钮
+                    Button(action: nextWord) {
+                        Text(currentIndex < words.count - 1 ? "下一个" : "完成")
+                            .frame(maxWidth: .infinity)
+                            .padding()
+                            .background(Color.blue)
+                            .foregroundColor(.white)
+                            .cornerRadius(10)
+                    }
                 }
                 .padding(.horizontal)
                 
@@ -87,6 +101,18 @@ struct SingleWordPracticeView: View {
             .navigationDestination(isPresented: $isNavigating) {  // 使用新的状态变量
                 PracticeCheckView(words: words, userAnswers: userAnswers, isBatchMode: false)
             }
+        }
+    }
+    
+    private func previousWord() {
+        // 保存当前输入
+        userAnswers[currentIndex] = currentInput
+        
+        // 返回上一个单词
+        if currentIndex > 0 {
+            currentIndex -= 1
+            // 恢复上一个单词的输入
+            currentInput = userAnswers[currentIndex]
         }
     }
     
