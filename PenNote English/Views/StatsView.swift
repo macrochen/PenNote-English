@@ -26,7 +26,11 @@ struct StatsView: View {
                     HStack(spacing: 10) {
                         StatCard(value: String(format: "%.1f%%", viewModel.totalAccuracy * 100), label: "正确率", color: .purple)
                         StatCard(value: "\(viewModel.consecutiveDays)天", label: "连续学习", color: .red)
-                        StatCard(value: "\(viewModel.todayPracticeCount)", label: "今日听写", color: .blue)
+                        NavigationLink {
+                            TodayPracticeDetailView()
+                        } label: {
+                            StatCard(value: "\(viewModel.todayPracticeCount)", label: "今日听写", color: .blue)
+                        }
                     }
                     .listRowInsets(EdgeInsets())
                     .padding(.horizontal)
